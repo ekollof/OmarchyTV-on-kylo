@@ -14,7 +14,7 @@ typedef struct {
 typedef struct {
     void *context;
     void (*prelude)(void *);
-    const oa_amp_gpio *(*gpio)(void *,unsigned function); /* 0 reset,1 mute; NULL absent */
+    const oa_amp_gpio *(*gpio)(void *,unsigned function); /* 0 reset,1 mute,2 hp_mute; NULL absent */
     void (*direction)(void *,uint32_t pin,uint32_t direction); /* native call uses1 */
     int (*level)(void *,uint32_t pin,uint32_t value); /* vendor boolean:0 fail/nonzero success */
     void (*delay_ms)(void *,unsigned milliseconds);

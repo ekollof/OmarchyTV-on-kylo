@@ -28,6 +28,21 @@ int oa_ad82587_set_volume(const oa_amp_register_io *io, int volume);
 int oa_ad82587_get_volume(const oa_amp_register_io *io, int *out);
 int oa_ad82587_soft_mute(const oa_amp_register_io *io, int on);
 
+/*
+ * Recovered AD82587 HP_Mute (aurora 0x008753f8). The firmware resolves GPIO
+ * function 0xc3 and writes the descriptor's normal level for on==1, otherwise
+ * its active level; the DEV_GPIO_SetLevel boolean is ignored, so the only
+ * failure is a NULL amp object or a missing descriptor. The shipped DTB
+ * func_pin_tbl gives HP_MUTE pin 207, mode output, normal high, active low
+ * (artifacts/analysis/dtb-2026-11-17/); pin>=200 selects the STBC dispatch.
+ * `set_level` uses the vendor boolean convention (nonzero success) and must be
+ * called on the caller's blocking worker. Returns 1 or 0.
+ */
+int oa_ad82587_hp_mute(int amp_present, uint32_t pin, int level_on,
+                      int level_off, int on,
+                      int (*set_level)(void *ud, uint32_t pin, int level),
+                      void *ud);
+
 #ifdef __cplusplus
 }
 #endif

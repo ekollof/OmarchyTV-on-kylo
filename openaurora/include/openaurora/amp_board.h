@@ -35,9 +35,12 @@ typedef struct {
     oa_amp_board_io io;
     oa_amp_gpio reset;
     oa_amp_gpio mute;
+    oa_amp_gpio hp_mute;
 } oa_amp_board;
 
-/* Fill the recovered defaults: reset {114,1,0}, mute {208,1,0}. */
+/* Fill the recovered defaults: reset {114,1,0}, mute {208,1,0} and
+ * hp_mute {207,1,0}. reset/mute come from the board init data; hp_mute is
+ * DTB func_pin_tbl id 0xc3 (pin 207, output, normal high, active low). */
 void oa_amp_board_defaults(oa_amp_board *board);
 
 /* Build an amp_init I/O table whose context is `board`. The table borrows

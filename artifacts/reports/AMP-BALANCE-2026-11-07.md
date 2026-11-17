@@ -1,14 +1,16 @@
 # AD82587 balance and control registers — 2026-11-07
 
-Status: current (SetVolume/GetVolume/SoftMute wired 2026-11-16)
-Last verified: 2026-11-16 (offline instruction check, host tests and ARM build)
-Evidence class: firmware instructions and host fake-service tests; no TV or
-audible/electrical amp acceptance.
+Status: current (SetVolume/GetVolume/SoftMute wired 2026-11-16; HP_Mute
+wired 2026-11-17 from the embedded DTB)
+Last verified: 2026-11-17 (firmware instructions, DTB descriptor, host tests
+and ARM build)
+Evidence class: firmware instructions, extracted DTB and host fake-service
+tests; no TV GPIO write or audible/electrical amp acceptance.
 
 Scope: recover the vendor AD82587 balance/volume/soft-mute/HP-mute register
-contracts and implement them with tests; HP_Mute remains unwired because its
-live descriptor is not recovered offline. Offline Ghidra/instruction work; no
-TV access.
+and GPIO contracts and implement them with tests. The HP_Mute descriptor came
+from the kernel DTB in the NAND dump, not from a live query. Offline
+Ghidra/instruction work; no TV access.
 
 ## Sources
 
@@ -66,16 +68,43 @@ invalid 101/non-numeric EINVAL, enable=1 fail-closed. ARM
 - 2026-11-16: `common/amp_controls.c` models these three registers with the
   injected vendor-boolean transport; `oa_amp_i2c_read_regs()` adds the general
   read; the amp owner has typed VOLUME/SOFTMUTE/GET_VOLUME jobs (blocking I2C
-  only on the worker), and `mod_audio_amp` publishes `audio.amp` v2 with
-  `set_volume`/`get_volume`/`soft_mute` behind default-off
+  only on the worker), and `mod_audio_amp` publishes `audio.amp` v3 with
+  `set_volume`/`get_volume`/`soft_mute`/`hp_mute`/`hp_state` behind default-off
   `audio_amp.extended_controls=1`. Control: `amp-volume <0..255>`,
   `amp-volume-get`, `amp-softmute <0|1>`, `amp-ext-state`. Host tests pass
   (`check-amp-controls`, owner jobs, `check-audio-amp-jobs`), full suite rc=0
   and ARM `mod_audio_amp.so` `5cfe5825…` builds. No hardware/audible run.
-- `HP_Mute` uses GPIO function id `0xc3` and `DEV_GPIO_SetLevel(pin,
-  level_on/off)`; the descriptor's pin/levels come from the live profile and
-  are not recovered offline. This is a normal GPIO, not the amp I2C path; it
-  remains unwired.
+- `HP_Mute` (`AMP_AD82587_HP_Mute` @ `0x008753f8`, instruction-checked) calls
+  `DEV_GPIO_GetDescription(0xc3)`, then writes descriptor[1] (pin) at
+  descriptor[4]/[5]: normal (`+0x10`) for `on == 1`, active (`+0x14`)
+  otherwise. It returns vendor `1` on the amp/descriptor path even when
+  `DEV_GPIO_SetLevel` fails; only a NULL amp or absent descriptor returns `0`.
+  Since pin >= 200, `DEV_GPIO_SetLevel` selects the STBC dispatch
+  (`(pin+0x38)&0xff`, level 1 -> command 2, 0 -> 3).
+- 2026-11-17: the descriptor was recovered offline from the kernel DTB
+  embedded in the NAND dump (`0xac0040`, totalsize `0x11bb3`). Its
+  `func_pin_tbl` gives `HP_MUTE` id `0xc3`: pin **207**, mode output, normal
+  **high**, active **low**; `AMP_MUTE` id `0xc4` is pin 208 normal high/active
+  low, and `EARPHONE` is pin 117 input normal high/active low. The live
+  read-only queries in DEV-GPIO-PROVIDER (EARPHONE 117, HDMI 274..277) match
+  the same table, validating the parse. Extraction is repeatable with
+  `openaurora/tools/re/dtb-func-pin.py`; the blob and full table are in
+  `artifacts/analysis/dtb-2026-11-17/` (DTB MD5
+  `7cda0296a5a1be944df93120aab26085`).
+- HP_Mute is wired through `common/amp_controls.c`
+  (`oa_ad82587_hp_mute`, vendor-boolean level callback with the result
+  ignored), `oa_amp_board`'s `hp_mute={207,1,0}` record, a typed
+  `OA_AMP_JOB_HP_MUTE` owner job and `audio.amp` v3 `hp_mute`/`hp_state` behind
+  `audio_amp.extended_controls=1`; control commands `amp-hp-mute <0|1>` and
+  `amp-ext-state` (hp fields). The board level dispatch was corrected to select
+  STBC at `pin >= 200` rather than only pin 208.
+- ABI: `oa_audio_amp_status` keeps its v2 size. HP state is the separate v3
+  `hp_state` accessor, and the v1 table's `state` copies only the bytes before
+  `volume_known`, so an older caller's smaller buffer is never overrun.
+  `check-audio-amp-jobs` includes a guard test for that prefix write. Host
+  tests pass, full suite rc=0, ARM `mod_audio_amp.so` `728feca7…` builds. No
+  TV GPIO write; STBC needs the platform video authority as documented in
+  AMP-VIDEO-OWNER.
 - `AMP_AD82587_Term`/`PowerDown` are NULL for this object; see AMP-SHUTDOWN.
 
 ## Limits

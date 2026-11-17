@@ -136,8 +136,11 @@ Evidence: [PANEL-BACKLIGHT](../../artifacts/reports/PANEL-BACKLIGHT-2026-11-07.m
   `0x3c/0x3d` (speaker mix gain 0x8000), `0x15/0x2b/0x2c/0x2d` (HP switch/DAC
   gains), plus `Hal_Audio_EasySelect/EasySet/KItem/SetControl/Send`.
 - The main amplifier is **ESMT AD82587_D**, not AD82586C: I2C bus 3, address
-  `0x34`, reset GPIO114, MCU mute GPIO208/STBC8. Speaker gain, decoder volume
-  and amp register volume are distinct scales.
+  `0x34`, reset GPIO114, MCU mute GPIO208/STBC8, HP mute GPIO207/STBC7.
+  Speaker gain, decoder volume and amp register volume are distinct scales.
+  HP_Mute writes the normal level (1) for on and active (0) for off and
+  ignores the GPIO result; the descriptor comes from the embedded DTB
+  `func_pin_tbl` (AMP-BALANCE).
 - AIN source table (56 entries), `AOUT` cache (612 B), `ICE_AudioStart`
   external branch, `audio.source` AIN/VAUD/AQ/AQuality/HP sequence, and the
   opt-in `audio.source.unmute` MM-path release are implemented in
@@ -318,6 +321,12 @@ Evidence: [TUNER-BRINGUP](../../artifacts/reports/TUNER-BRINGUP-2026-11-06.md),
   `0x175f350`, `astPwmBasePin` `0x175f320`. The ioctl word 0 is the pin and
   word 1 the function id; `DEV_GPIO_GetDescription` returns `entry+8`, so
   descriptor[1] is the pin used by `DEV_PANEL_*`.
+- The per-board pin/mode/normal/active values live in the embedded DTB's
+  `func_pin_tbl` (NAND `0xac0040`, DTB MD5 `7cda0296…`). `func_pin_tbl` is
+  authoritative offline: EARPHONE id 117 pin117 input normal-high/active-low
+  and HDMI_HOTPLUG_1..4 pins 274..277 match live read-only queries. Parse with
+  `openaurora/tools/re/dtb-func-pin.py`; do not call the live descriptor
+  query when the same table answers the question.
 - Read-only queries: `AMP-GPIO-QUERY` uses direct GET670d/670f on an
   already-open GPIO114. `Hal_Gpio_GetDirection` first issues 670a (marks the pin
   open) and ordinary `Hal_Gpio_Read` exports the pin first — neither is

@@ -428,11 +428,16 @@ typedef struct {
     int (*state)(oa_audio_amp_status *out);
     int (*set_mute)(int on); /* 0 accepted, negative errno */
     int (*set_balance)(int balance); /* 0..100, regs 4/5; 0 accepted */
-    /* v2, published only with audio_amp.extended_controls=1. All three submit
-     * owner-worker jobs; 0 accepted, -EBUSY/-EINVAL/-ENODEV on rejection. */
+    /* v2/v3, published only with audio_amp.extended_controls=1. Every entry
+     * submits an owner-worker job; 0 accepted, -EBUSY/-EINVAL/-ENODEV on
+     * rejection. v3 appends hp_mute; v2 callers only use the prefix. */
     int (*set_volume)(int volume);   /* 0..255, reg3 with readback */
     int (*get_volume)(void);         /* submit reg3 read; see amp-state */
     int (*soft_mute)(int on);        /* reg2 bits 0x0e */
+    int (*hp_mute)(int on);          /* v3: GPIO 0xc3 via STBC; 0/1 */
+    /* v3: HP state is separate so oa_audio_amp_status keeps its v2 size and
+     * older callers' buffers remain valid. 0 success. */
+    int (*hp_state)(int *known, int *value);
 } oa_audio_amp_iface;
 
 /* audio — volume/mute. Published by mod_audio.

@@ -19,6 +19,7 @@
  * join plus close on a worker.
  */
 #include <errno.h>
+#include <stddef.h>
 #include <fcntl.h>
 #include <pthread.h>
 #include <stdio.h>
@@ -46,6 +47,7 @@ struct ctx {
     int extended_enabled;
     int volume_known, volume;
     int soft_mute_known, soft_mute;
+    int hp_mute_known, hp_mute;
     uint64_t monitor_timer;
     unsigned monitor_initial_ms;
     unsigned monitor_period_ms;
@@ -220,6 +222,19 @@ static void poll_result(struct ctx *c)
                             completion.native_result,
                             (unsigned long long)completion.ticket);
             }
+        } else if (completion.kind == OA_AMP_JOB_HP_MUTE) {
+            if (completion.native_result == 0) {
+                c->hp_mute_known = 1;
+                c->hp_mute = completion.value ? 1 : 0;
+                c->api->log(c->api->priv, OA_LOG_INFO,
+                            "audio_amp: hp mute -> %d (ticket %llu)",
+                            c->hp_mute, (unsigned long long)completion.ticket);
+            } else {
+                c->api->log(c->api->priv, OA_LOG_ERROR,
+                            "audio_amp: HP_Mute failed (%d, ticket %llu)",
+                            completion.native_result,
+                            (unsigned long long)completion.ticket);
+            }
         } else if (completion.kind == OA_AMP_JOB_GET_VOLUME) {
             if (completion.native_result == 0) {
                 c->volume_known = 1;
@@ -289,9 +304,11 @@ static int iface_init(void)
     return 0;
 }
 
-static int iface_state(oa_audio_amp_status *out)
+/* Version-split state writers: the caller's struct is only as large as the
+ * interface version it looked up. v1 stops at balance; v3 is the full struct.
+ * Never write appended fields through a v1/v2 table. */
+static int state_common(struct ctx *c, oa_audio_amp_status *out)
 {
-    struct ctx *c = g_ctx;
     if (!c || !out || !c->published)
         return -ENODEV;
     poll_result(c);
@@ -315,6 +332,37 @@ static int iface_state(oa_audio_amp_status *out)
     out->volume = c->volume_known ? c->volume : 0;
     out->soft_mute_known = c->soft_mute_known;
     out->soft_mute = c->soft_mute_known ? c->soft_mute : 0;
+    return 0;
+}
+
+static int iface_state(oa_audio_amp_status *out)
+{
+    /* v2 struct size; also used by the v3 table (its struct is the same or
+     * larger). v1 callers must use iface_state_v1. */
+    return state_common(g_ctx, out);
+}
+
+static int iface_state_v1(oa_audio_amp_status *out)
+{
+    oa_audio_amp_status st;
+    int rc = state_common(g_ctx, &st);
+    if (rc == 0)
+        /* v1 callers' struct ends before volume_known. Copy only that prefix;
+         * never write sizeof(st) through an older caller's buffer. */
+        memcpy(out, &st, offsetof(oa_audio_amp_status, volume_known));
+    return rc;
+}
+
+static int iface_hp_state(int *known, int *value)
+{
+    struct ctx *c = g_ctx;
+    if (!c || !c->published)
+        return -ENODEV;
+    poll_result(c);
+    if (known)
+        *known = c->hp_mute_known;
+    if (value)
+        *value = c->hp_mute_known ? c->hp_mute : 0;
     return 0;
 }
 
@@ -385,6 +433,8 @@ static int submit_extended(struct ctx *c, int kind)
         rc = oa_amp_owner_submit_volume(c->owner, c->volume, &ticket);
     else if (kind == OA_AMP_JOB_GET_VOLUME)
         rc = oa_amp_owner_submit_get_volume(c->owner, &ticket);
+    else if (kind == OA_AMP_JOB_HP_MUTE)
+        rc = oa_amp_owner_submit_hp_mute(c->owner, c->hp_mute, &ticket);
     else
         rc = oa_amp_owner_submit_soft_mute(c->owner, c->soft_mute, &ticket);
     if (rc)
@@ -417,14 +467,24 @@ static int iface_soft_mute(int on)
     return submit_extended(c, OA_AMP_JOB_SOFTMUTE);
 }
 
+static int iface_hp_mute(int on)
+{
+    struct ctx *c = g_ctx;
+    if (!c || !c->extended_enabled || (on != 0 && on != 1))
+        return -EINVAL;
+    c->hp_mute = on;
+    return submit_extended(c, OA_AMP_JOB_HP_MUTE);
+}
+
 static const oa_audio_amp_iface g_iface = {
-    .init = iface_init, .state = iface_state, .set_mute = iface_set_mute,
+    .init = iface_init, .state = iface_state_v1, .set_mute = iface_set_mute,
     .set_balance = iface_set_balance
 };
 static const oa_audio_amp_iface g_iface_ext = {
     .init = iface_init, .state = iface_state, .set_mute = iface_set_mute,
     .set_balance = iface_set_balance, .set_volume = iface_set_volume,
-    .get_volume = iface_get_volume, .soft_mute = iface_soft_mute
+    .get_volume = iface_get_volume, .soft_mute = iface_soft_mute,
+    .hp_mute = iface_hp_mute, .hp_state = iface_hp_state
 };
 
 static void release_plat(struct ctx *c)
@@ -619,7 +679,7 @@ static int m_start(void *v)
     } else if (c->extended_enabled) {
         c->extended_enabled = 0;
     }
-    uint32_t iface_version = c->extended_enabled ? 2u : 1u;
+    uint32_t iface_version = c->extended_enabled ? 3u : 1u;
     const oa_audio_amp_iface *iface = c->extended_enabled ? &g_iface_ext : &g_iface;
     if (c->api->publish(c->api->priv, OA_SVC_AUDIO_AMP, iface_version, iface) != 0) {
         teardown_now(c);

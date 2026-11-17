@@ -5,6 +5,7 @@
 #include <errno.h>
 #include <pthread.h>
 #include <stdint.h>
+#include <stddef.h>
 #include <stdio.h>
 #include <string.h>
 #include <time.h>
@@ -15,6 +16,7 @@
 #include "../modules/audio_amp/audio_amp.c"
 
 static const oa_amp_gpio mute_record = { 208, 1, 0 };
+static const oa_amp_gpio hp_record = { 207, 1, 0 };
 
 static struct {
     pthread_mutex_t mu;
@@ -47,7 +49,9 @@ static void prelude(void *v)
 
 static const oa_amp_gpio *gpio(void *v, unsigned function)
 {
-    assert(v == &hw && function < 2);
+    assert(v == &hw && function < 3);
+    if (function == 2)
+        return &hp_record;
     return function == 1 ? &mute_record : NULL;
 }
 
@@ -300,13 +304,42 @@ static void test_extended_controls(void)
     st = wait_idle();
     assert(st.volume_known == 1 && st.volume == 0x1b);
 
+    int hp_known = 0, hp = -1;
+    assert(iface_hp_mute(1) == 0);
+    st = wait_idle();
+    assert(iface_hp_state(&hp_known, &hp) == 0 && hp_known == 1 && hp == 1);
+    assert(iface_hp_mute(0) == 0);
+    st = wait_idle();
+    assert(iface_hp_state(&hp_known, &hp) == 0 && hp_known == 1 && hp == 0);
+    assert(iface_hp_mute(2) == -EINVAL);
+
     int result = 0;
     finish_owner(c->owner, &result);
     assert(result == 0);
     c->owner = NULL;
     m_destroy(c);
-    puts("ok audio_amp extended: reg3 volume readback, reg2 soft mute and "
-         "GetVolume on the owner worker");
+    puts("ok audio_amp extended: reg3 volume readback, reg2 soft mute, "
+         "GetVolume and HP_Mute state on the owner worker");
+}
+
+static void test_state_prefix_bounds(void)
+{
+    struct ctx *c = make_ctx();
+    /* A v1 caller's struct ends before volume_known. The v1 writer must not
+     * touch the appended v2/v3 tail or anything after the buffer. */
+    const size_t v1 = offsetof(oa_audio_amp_status, volume_known);
+    unsigned char buf[sizeof(oa_audio_amp_status) + 16];
+    memset(buf, 0x5a, sizeof buf);
+    assert(iface_state_v1((oa_audio_amp_status *)buf) == 0);
+    for (size_t i = v1; i < sizeof buf; i++)
+        assert(buf[i] == 0x5a);
+
+    int result = 0;
+    finish_owner(c->owner, &result);
+    assert(result == 0);
+    c->owner = NULL;
+    m_destroy(c);
+    puts("ok audio_amp: v1 state writes only its prefix (no v2/v3 tail write)");
 }
 
 int main(void)
@@ -371,6 +404,7 @@ int main(void)
     test_suspend_resume();
     test_suspend_busy();
     test_extended_controls();
+    test_state_prefix_bounds();
     puts("all audio_amp job tests passed");
     return 0;
 }

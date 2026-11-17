@@ -34,6 +34,12 @@ dump is the source of truth; the extracted trees are caches produced from it.
 | `ntkndptuner.ko` | `rootfs/root/lib/modules/ntkndptuner.ko` | `84be071efa5d16c2b6e8d13db667937a` | (inventory) | tuner |
 | `kteeclient.ko` | `rootfs/root/lib/modules/kteeclient.ko` | `235215638f06201efe9bbebbb6389c9b` | (inventory) | TEE client |
 
+## Device tree
+
+| artifact | source | MD5 | role / key evidence |
+|---|---|---|---|
+| `mb230.dtb` | `artifacts/dumps/tv_nand.bin` at NAND offset `0xac0040`, totalsize `0x11bb3` | `7cda0296a5a1be944df93120aab26085` | embedded FDT with `func_pin_tbl`: GPIO function descriptors (`pin`, mode, normal, active). Used for AMP-BALANCE HP_MUTE (id 0xc3 = pin 207, output, normal high, active low); EARPHONE 117 and HDMI 274..277 match the live read-only queries. Extracted copy under `artifacts/analysis/dtb-2026-11-17/`; parser `openaurora/tools/re/dtb-func-pin.py`. |
+
 VENDOR-INVENTORY-2026-11-07 hashes/dumps **389 ELF files in `/vendor` plus 72
 outside it (461 total), 41 kernel modules, 15 platform modules**. Nine of the
 16 early platform modules lacked a Ghidra project but have objdump/relocation

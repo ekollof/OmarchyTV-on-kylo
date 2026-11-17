@@ -39,3 +39,15 @@ int oa_ad82587_soft_mute(const oa_amp_register_io *io, int on)
     next = on ? (uint8_t)(byte | 0x0eu) : (uint8_t)(byte & 0xf1u);
     return io->write(io->ud, 2, next) ? 1 : 0;
 }
+
+int oa_ad82587_hp_mute(int amp_present, uint32_t pin, int level_on,
+                       int level_off, int on,
+                       int (*set_level)(void *ud, uint32_t pin, int level),
+                       void *ud)
+{
+    if (!amp_present || !set_level || (on != 0 && on != 1))
+        return 0;
+    /* The shipped routine checks neither return value nor errno. */
+    (void)set_level(ud, pin, on ? level_on : level_off);
+    return 1;
+}

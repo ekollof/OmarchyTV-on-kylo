@@ -13,6 +13,7 @@
 #include "openaurora/amp_owner.h"
 
 static const oa_amp_gpio mute_record = { 208, 1, 0 };
+static const oa_amp_gpio hp_record = { 207, 1, 0 };
 
 static struct {
     pthread_mutex_t mu;
@@ -49,9 +50,12 @@ static void prelude(void *v)
 
 static const oa_amp_gpio *gpio(void *v, unsigned function)
 {
-    assert(v == &hw && function < 2);
+    assert(v == &hw && function < 3);
     /* Init runs with the mute record absent (as on the fixture); the mute job
-     * explicitly enables it so the GPIO path is exercised. */
+     * explicitly enables it so the GPIO path is exercised. HP_Mute uses its
+     * own DTB-recovered record. */
+    if (function == 2)
+        return &hp_record;
     return function == 1 && hw.provide_mute ? &mute_record : NULL;
 }
 
@@ -297,6 +301,27 @@ int main(void)
     assert(result.kind == OA_AMP_JOB_GET_VOLUME && result.native_result == 0);
     assert(result.value == 0x42);
     puts("ok amp owner jobs: GetVolume returns the worker-read reg3 byte");
+
+    /* HP_Mute: on writes level_on, off writes level_off. The vendor ignores
+     * the GPIO result, so even a failed write reports a completed job. */
+    hw.levels = 0;
+    assert(!oa_amp_owner_submit_hp_mute(o, 1, &ticket));
+    wait_until(&hw.levels, 1);
+    take_wait(o, &result);
+    assert(result.kind == OA_AMP_JOB_HP_MUTE && result.value == 1 &&
+           result.native_result == 0);
+    assert(hw.levels == 1 && hw.level_pin == 207 && hw.level_value == 1);
+
+    hw.level_fail = 1;
+    hw.levels = 0;
+    assert(!oa_amp_owner_submit_hp_mute(o, 0, &ticket));
+    wait_until(&hw.levels, 1);
+    take_wait(o, &result);
+    assert(result.native_result == 0 && hw.levels == 1 &&
+           hw.level_pin == 207 && hw.level_value == 0);
+    hw.level_fail = 0;
+    assert(oa_amp_owner_submit_hp_mute(o, 2, &ticket) == -EINVAL);
+    puts("ok amp owner jobs: HP_Mute writes pin 207 normal/active on the worker");
 
     for (unsigned i = 0; i < 5000; i++) {
         int rc = oa_amp_owner_quiesce(o);

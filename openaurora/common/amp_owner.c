@@ -101,6 +101,11 @@ static int run_monitor(oa_amp_owner *o)
     o->monitor_mismatches=m.mismatches;
     return rc; /* 0 match, 1 mismatch recovered, -EIO read failure */
 }
+static int hp_level_cb(void *ud,uint32_t pin,int level)
+{
+    oa_amp_owner *o=ud;
+    return o->io.level ? o->io.level(o->io.context,pin,(uint32_t)level) : 0;
+}
 static int run_job(oa_amp_owner *o)
 {
     if(o->pending_kind==OA_AMP_JOB_INIT)
@@ -111,6 +116,12 @@ static int run_job(oa_amp_owner *o)
        o->pending_kind==OA_AMP_JOB_SOFTMUTE ||
        o->pending_kind==OA_AMP_JOB_GET_VOLUME)
         return run_register_job(o);
+    if(o->pending_kind==OA_AMP_JOB_HP_MUTE) {
+        const oa_amp_gpio *h=o->io.gpio(o->io.context,2);
+        if(!h)return -ENOTSUP;
+        return oa_ad82587_hp_mute(1,h->pin,h->level_on,h->level_off,
+                                  o->pending_value,hp_level_cb,o)?0:-EIO;
+    }
     if(o->pending_kind==OA_AMP_JOB_MUTE) {
         const oa_amp_gpio *m=o->io.gpio(o->io.context,1);
         if(!m)return -ENOTSUP;
@@ -256,6 +267,14 @@ int oa_amp_owner_submit_get_volume(oa_amp_owner *o,uint64_t *ticket)
     if(!ticket)return -EINVAL;
     pthread_mutex_lock(&o->mu);
     rc=queue_locked(o,OA_AMP_JOB_GET_VOLUME,0,ticket);
+    pthread_mutex_unlock(&o->mu);return rc;
+}
+int oa_amp_owner_submit_hp_mute(oa_amp_owner *o,int on,uint64_t *ticket)
+{
+    int rc=valid(o);if(rc)return rc;
+    if(!ticket || (on!=0 && on!=1))return -EINVAL;
+    pthread_mutex_lock(&o->mu);
+    rc=queue_locked(o,OA_AMP_JOB_HP_MUTE,on,ticket);
     pthread_mutex_unlock(&o->mu);return rc;
 }
 int oa_amp_owner_submit_monitor(oa_amp_owner *o,

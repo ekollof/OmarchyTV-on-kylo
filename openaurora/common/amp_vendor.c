@@ -66,6 +66,8 @@ static void default_delay(void *context, unsigned milliseconds)
 static const oa_amp_gpio *v_gpio(void *context, unsigned function)
 {
     oa_amp_vendor *v = context;
+    if (function == 2)
+        return &v->board->hp_mute;
     return function ? &v->board->mute : &v->board->reset;
 }
 

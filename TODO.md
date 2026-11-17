@@ -458,12 +458,19 @@ unvalidated.
       applied value, and a pending job still rejects with `-EBUSY`. SetVolume
       2026-11-16: SetVolume/GetVolume (reg3 write+readback) and SoftMute
       (reg2 OR 0x0e / AND 0xf1) are wired via `common/amp_controls.c`, general
-      `oa_amp_i2c_read_regs`, typed owner jobs and `audio.amp` v2 behind
+      `oa_amp_i2c_read_regs`, typed owner jobs and `audio.amp` v3 behind
       default-off `audio_amp.extended_controls` (`amp-volume`, `amp-volume-get`,
       `amp-softmute`, `amp-ext-state`); host tests pass, full suite rc=0, ARM
-      `mod_audio_amp.so` `5cfe5825…` builds. HP_Mute (GPIO0xc3) remains
-      unwired because its live descriptor is not recovered offline. No
-      hardware/audible amp run. AMP-BALANCE.
+      `mod_audio_amp.so` `5cfe5825…` builds. 2026-11-17: HP_Mute
+      (`AMP_AD82587_HP_Mute` @0x8753f8: normal level on on==1, active
+      otherwise, SetLevel result ignored) is wired from the embedded-DTB
+      descriptor func_pin_tbl HP_MUTE id 0xc3 pin 207/output/normal high/
+      active low, via `oa_ad82587_hp_mute`, board `hp_mute={207,1,0}`, a typed
+      owner job and `audio.amp` v3 (`amp-hp-mute`, hp fields in
+      `amp-ext-state`); board level dispatch now selects STBC at pin>=200.
+      Host tests pass, full suite rc=0, ARM `mod_audio_amp.so` `728feca7…`.
+      No hardware/audible amp run; STBC still needs platform video authority.
+      AMP-BALANCE.
 - [ ] Agent-review follow-ups (AGENT-REVIEW-2026-11-07): UART repeat
       semantics. The CEC authority mapping lifetime
       (`check-cec-authority-lifetime`), CEC suspend/resume

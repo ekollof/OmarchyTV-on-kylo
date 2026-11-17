@@ -8,6 +8,8 @@ static const oa_amp_gpio *board_gpio(void *context, unsigned function)
     oa_amp_board *b = context;
     if (b->io.gpio)
         return b->io.gpio(b->io.context, function);
+    if (function == 2)
+        return &b->hp_mute;
     return function ? &b->mute : &b->reset;
 }
 
@@ -22,9 +24,11 @@ static int board_level(void *context, uint32_t pin, uint32_t value)
 {
     oa_amp_board *b = context;
     int rc = -ENOTSUP;
-    if (pin == 208 && b->io.stbc_level)
+    /* DEV_GPIO_SetLevel selects the STBC path at pin>=200; 208 (AMP_MUTE)
+     * and 207 (HP_MUTE) both use it. */
+    if (pin >= 200 && b->io.stbc_level)
         rc = b->io.stbc_level(b->io.context, pin, value);
-    else if (pin != 208 && b->io.normal_level)
+    else if (pin < 200 && b->io.normal_level)
         rc = b->io.normal_level(b->io.context, pin, value);
     return rc == 0 ? 1 : 0;
 }
@@ -87,6 +91,7 @@ void oa_amp_board_defaults(oa_amp_board *board)
     memset(board, 0, sizeof *board);
     board->reset = (oa_amp_gpio){ 114, 1, 0 };
     board->mute = (oa_amp_gpio){ 208, 1, 0 };
+    board->hp_mute = (oa_amp_gpio){ 207, 1, 0 };
 }
 
 int oa_amp_board_init_io(oa_amp_board *board, const oa_amp_board_io *io,

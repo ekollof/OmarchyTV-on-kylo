@@ -12,6 +12,18 @@ struct fake {
     uint8_t last_reg, last_byte;
 };
 
+static int hp_pin = -1, hp_level = -1, hp_calls;
+static int hp_level_ok;
+
+static int f_hp_level(void *ud, uint32_t pin, int level)
+{
+    (void)ud;
+    hp_calls++;
+    hp_pin = (int)pin;
+    hp_level = level;
+    return hp_level_ok;
+}
+
 static int f_write(void *ud, uint8_t reg, uint8_t byte)
 {
     struct fake *f = ud;
@@ -78,6 +90,21 @@ int main(void)
     assert(oa_ad82587_soft_mute(&io, 1) == 0);
     f.fail_write = 0;
 
+    /* HP_Mute: on -> level_on, off -> level_off; the transport boolean is
+     * ignored exactly as in AMP_AD82587_HP_Mute. */
+    hp_calls = 0; hp_pin = -1; hp_level = -1; hp_level_ok = 1;
+    assert(oa_ad82587_hp_mute(1, 207, 1, 0, 1, f_hp_level, NULL) == 1);
+    assert(hp_calls == 1 && hp_pin == 207 && hp_level == 1);
+    assert(oa_ad82587_hp_mute(1, 207, 1, 0, 0, f_hp_level, NULL) == 1);
+    assert(hp_calls == 2 && hp_pin == 207 && hp_level == 0);
+    hp_level_ok = 0;
+    assert(oa_ad82587_hp_mute(1, 207, 1, 0, 1, f_hp_level, NULL) == 1);
+    assert(hp_calls == 3 && hp_level == 1);
+    assert(oa_ad82587_hp_mute(0, 207, 1, 0, 1, f_hp_level, NULL) == 0);
+    assert(oa_ad82587_hp_mute(1, 207, 1, 0, 2, f_hp_level, NULL) == 0);
+    assert(oa_ad82587_hp_mute(1, 207, 1, 0, 1, NULL, NULL) == 0);
+    assert(hp_calls == 3);
+
     /* Reject invalid inputs without touching the transports. */
     int w = f.writes, r = f.reads;
     assert(oa_ad82587_set_volume(&io, -1) == 0);
@@ -87,7 +114,7 @@ int main(void)
     assert(oa_ad82587_set_volume(NULL, 1) == 0);
     assert(f.writes == w && f.reads == r);
 
-    puts("ok amp controls: SetVolume reg3 write/readback, GetVolume and "
-         "SoftMute reg2 masks with vendor booleans");
+    puts("ok amp controls: SetVolume reg3 write/readback, GetVolume, "
+         "SoftMute reg2 masks and HP_Mute normal/active levels");
     return 0;
 }

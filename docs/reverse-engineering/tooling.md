@@ -71,6 +71,13 @@ artifacts/scripts/extract_from_dump.sh root:/lib/modules/ntkndpdrm.ko -o /tmp/ou
   (see [../reproduce/root-payload.md](../reproduce/root-payload.md)).
 - The extractor uses `artifacts/workbench/rootfs/*` as caches. If a hash does
   not match the report, re-extract before analysing.
+- The kernel DTB is not in those three volumes. It is embedded in the NAND at
+  offset `0xac0040` (FDT magic, totalsize `0x11bb3`, MD5
+  `7cda0296a5a1be944df93120aab26085`). Read `func_pin_tbl` without a live
+  query:
+  `python3 openaurora/tools/re/dtb-func-pin.py --name HP_MUTE` (options
+  `--dump`, `--offset`). This recovered EARPHONE/HP_MUTE/AMP_MUTE pins and
+  levels for AMP-BALANCE.
 
 ## Fast instruction and symbol search
 

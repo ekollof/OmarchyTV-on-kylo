@@ -57,6 +57,8 @@
 
 # Raw recorder intermediates; PNG captures are the maintained evidence.
 artifacts/analysis/**/offline-apps-grid-*.rgba
+# Firmware-derived binary blobs stay out of history; re-extract from the dump.
+artifacts/analysis/**/*.dtb
 
 # Locally imported native UI artwork (licence/permission varies; not redistributed)
 openaurora/ui/*.rgba

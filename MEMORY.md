@@ -1324,11 +1324,16 @@ check-amp-owner-jobs and check-audio-amp-jobs pass; ARM mod_audio_amp
 67d34652.... SetVolume is reg3 prescale+readback, SoftMute reg2 0x0e, HP_Mute
 GPIO0xc3; unwired. 2026-11-16: SetVolume/GetVolume (reg3 write+readback) and
 SoftMute (reg2 OR 0x0e / AND 0xf1) are wired via `common/amp_controls.c`,
-general `oa_amp_i2c_read_regs`, typed owner jobs and `audio.amp` v2 behind
+general `oa_amp_i2c_read_regs`, typed owner jobs and `audio.amp` v3 behind
 default-off `audio_amp.extended_controls` (`check-amp-controls`,
 `check-audio-amp-jobs`, full suite rc=0, ARM `mod_audio_amp.so` `5cfe5825…`);
-no hardware/audible run. HP_Mute still needs its live GPIO descriptor.
-AMP-BALANCE, AMP-JOBS.
+no hardware/audible run. 2026-11-17: HP_Mute wired from the embedded-DTB
+descriptor (func_pin_tbl HP_MUTE id 0xc3 pin 207 output normal high active
+low; EARPHONE/HDMI entries match live queries) through
+`oa_ad82587_hp_mute`, board `hp_mute={207,1,0}`, a typed owner job and
+`audio.amp` v3 (`amp-hp-mute`); board STBC dispatch corrected to pin>=200.
+`check-amp-controls`/owner/audio_amp tests pass, full suite rc=0, ARM
+`mod_audio_amp.so` `728feca7…`; no TV GPIO write. AMP-BALANCE, AMP-JOBS.
 Agent review 2026-11-07 (Grok): fixed CRITICAL MAP_FAILED authority mapping
 (commit f323673, regression test), the HIGH authority lifetime across a
 timed-out quiesce (keep the mapping until join succeeds; check-cec-authority-

@@ -14,7 +14,8 @@ enum {
     OA_AMP_JOB_MONITOR = 3,
     OA_AMP_JOB_VOLUME = 4,
     OA_AMP_JOB_SOFTMUTE = 5,
-    OA_AMP_JOB_GET_VOLUME = 6
+    OA_AMP_JOB_GET_VOLUME = 6,
+    OA_AMP_JOB_HP_MUTE = 7
 };
 typedef struct {
     uint64_t ticket;
@@ -73,6 +74,11 @@ int oa_amp_owner_set_register_read(oa_amp_owner *owner,
 int oa_amp_owner_submit_volume(oa_amp_owner *owner,int volume,uint64_t *ticket);
 int oa_amp_owner_submit_soft_mute(oa_amp_owner *owner,int on,uint64_t *ticket);
 int oa_amp_owner_submit_get_volume(oa_amp_owner *owner,uint64_t *ticket);
+/* Submit recovered HP_Mute (GPIO function 0xc3, record selector 2). The
+ * worker writes level_on for on==1 and level_off otherwise through the same
+ * level dispatch as Init; the vendor ignores the GPIO result, so a
+ * native_result of 0 does not prove electrical effect. 0 accepted. */
+int oa_amp_owner_submit_hp_mute(oa_amp_owner *owner,int on,uint64_t *ticket);
 int oa_amp_owner_take(oa_amp_owner *owner,oa_amp_completion *out);
 /* Quiesce rejects new jobs, drains accepted work without cancellation/replay,
  * then attempts a nonblocking join. Returns-EBUSY until fully terminated/joined,

@@ -1633,14 +1633,17 @@ int oa_control_command(oa_host *h, char *line, char *outbuf, size_t outlen)
     }
     if(!strcmp(cmd,"amp-ext-state")) {
         if(force || a1 || a2){snprintf(outbuf,outlen,"failed errno %d\n",EINVAL);return -1;}
-        const oa_audio_amp_iface *s=h->api.lookup(h,OA_SVC_AUDIO_AMP,2);
+        const oa_audio_amp_iface *s=h->api.lookup(h,OA_SVC_AUDIO_AMP,3);
         if(!s){snprintf(outbuf,outlen,"failed errno %d\n",ENOTSUP);return -1;}
         oa_audio_amp_status st;
         int rc=s->state(&st);
+        int hp_known=0,hp=0;
+        if(rc==0 && s->hp_state) rc=s->hp_state(&hp_known,&hp);
         h->api.release(h,OA_SVC_AUDIO_AMP);
         if(rc){snprintf(outbuf,outlen,"failed errno %d\n",-rc);return -1;}
-        snprintf(outbuf,outlen,"amp volume %d volume_known %d soft_mute %d soft_mute_known %d\n",
-                 st.volume,st.volume_known,st.soft_mute,st.soft_mute_known);
+        snprintf(outbuf,outlen,"amp volume %d volume_known %d soft_mute %d soft_mute_known %d hp_mute %d hp_mute_known %d\n",
+                 st.volume,st.volume_known,st.soft_mute,st.soft_mute_known,
+                 hp,hp_known);
         return 0;
     }
     if(!strcmp(cmd,"amp-balance")) {
@@ -1669,6 +1672,20 @@ int oa_control_command(oa_host *h, char *line, char *outbuf, size_t outlen)
         if(!s){snprintf(outbuf,outlen,"failed errno %d\n",ENOTSUP);return -1;}
         int rc=volume_cmd?(s->set_volume?s->set_volume((int)value):-ENOTSUP)
                          :(s->soft_mute?s->soft_mute((int)value):-ENOTSUP);
+        h->api.release(h,OA_SVC_AUDIO_AMP);
+        if(rc){snprintf(outbuf,outlen,"failed errno %d\n",-rc);return -1;}
+        snprintf(outbuf,outlen,"ok\n");
+        return 0;
+    }
+    if(!strcmp(cmd,"amp-hp-mute")) {
+        if(force || !a1 || a2){snprintf(outbuf,outlen,"failed errno %d\n",EINVAL);return -1;}
+        int on;
+        if(!strcmp(a1,"0"))on=0;
+        else if(!strcmp(a1,"1"))on=1;
+        else {snprintf(outbuf,outlen,"failed errno %d\n",EINVAL);return -1;}
+        const oa_audio_amp_iface *s=h->api.lookup(h,OA_SVC_AUDIO_AMP,3);
+        if(!s){snprintf(outbuf,outlen,"failed errno %d\n",ENOTSUP);return -1;}
+        int rc=s->hp_mute?s->hp_mute(on):-ENOTSUP;
         h->api.release(h,OA_SVC_AUDIO_AMP);
         if(rc){snprintf(outbuf,outlen,"failed errno %d\n",-rc);return -1;}
         snprintf(outbuf,outlen,"ok\n");
