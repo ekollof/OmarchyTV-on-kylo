@@ -389,6 +389,11 @@ Evidence: [APP-MANAGER-KEYBOARD](../../artifacts/reports/APP-MANAGER-KEYBOARD-20
 - Native shell: `ui_omarchy` over `ui.engine` (home grid, sources, apps,
   settings, clock); `ui_vendor` reproduces the stock portal. The production UI
   is native `ui_engine` drawing; do not embed or launch the browser app.
+- Apps-grid focused labels use the firmware single-line centre rule
+  (`physicalWidth` + first bearing, not the ink bbox):
+  `common/apps_label.c` + `check-apps-label`. Stock Twitter ink is 919..999;
+  the replacement is 918..998 after the 2026-11-17 correction. The last pixel
+  needs the BinSVG 377 `text`/`mRowM` mask transform; do not fit it.
 
 Evidence: [UI-PARITY](../../artifacts/reports/UI-PARITY-2026-10-31.md),
 [UI-ANIMATIONS](../../artifacts/reports/UI-ANIMATIONS-2026-10-31.md),

@@ -1,0 +1,56 @@
+record 373: rc=0
+  tag=1 id='background' eoff=0 rect=(0,0,1280,720) stroke_w=0 opacity=10 stroke='' fill='#FFFFFF'
+  tag=8 id='gRowL' eoff=38
+  tag=1 id='mRowL' eoff=45 rect=(149,0,185,180) stroke_w=1 opacity=10 stroke='#000000' fill='none'
+  tag=1 id='' eoff=82 rect=(149,0,185,180) stroke_w=0 opacity=10 stroke='' fill='#F7941E'
+  tag=9 id='(null)' eoff=110
+  tag=8 id='gRowR' eoff=111
+  tag=1 id='mRowR' eoff=118 rect=(509,0,545,180) stroke_w=1 opacity=10 stroke='#000000' fill='none'
+  tag=1 id='' eoff=155 rect=(509,0,545,180) stroke_w=0 opacity=10 stroke='' fill='#F7941E'
+  tag=9 id='(null)' eoff=183
+  tag=8 id='gRowM' eoff=184
+  tag=1 id='mRowM' eoff=191 rect=(187,0,507,180) stroke_w=1 opacity=10 stroke='#1C1C1C' fill='none'
+  tag=1 id='' eoff=228 rect=(187,0,507,180) stroke_w=0 opacity=10 stroke='' fill='#F7941E'
+  tag=1 id='' eoff=256 rect=(69,180,614,246) stroke_w=0 opacity=10 stroke='' fill='#F7941E'
+  tag=9 id='(null)' eoff=284
+record 377: rc=0
+  tag=8 id='rowItems' eoff=0
+  tag=1 id='mRowM' eoff=10 rect=(210,36,570,216) stroke_w=1 opacity=10 stroke='#000000' fill='none'
+  tag=1 id='appsImage' eoff=47 rect=(219,36,561,216) stroke_w=1 opacity=10 stroke='#000000' fill='none'
+  tag=1 id='text' eoff=88 rect=(236,214,564,254) stroke_w=0 opacity=10 stroke='#261719' fill='none'
+  tag=9 id='(null)' eoff=124
+record 378: rc=0
+  tag=1 id='background' eoff=0 rect=(0,0,1280,720) stroke_w=0 opacity=10 stroke='' fill='#FFFFFF'
+  tag=8 id='gTopL' eoff=38
+  tag=1 id='mTopL' eoff=45 rect=(1,1,3,3) stroke_w=1 opacity=10 stroke='#000000' fill='none'
+  tag=9 id='(null)' eoff=82
+  tag=8 id='gTopR' eoff=83
+  tag=1 id='mTopR' eoff=90 rect=(55,1,57,3) stroke_w=1 opacity=10 stroke='#000000' fill='none'
+  tag=9 id='(null)' eoff=127
+  tag=8 id='gRowL' eoff=128
+  tag=1 id='mRowL' eoff=135 rect=(-8,8,7,43) stroke_w=1 opacity=10 stroke='#000000' fill='none'
+  tag=1 id='alignment' eoff=172 rect=(1,8,3,43) stroke_w=1 opacity=10 stroke='#000000' fill='none'
+  tag=1 id='' eoff=213 rect=(1,3,6,45) stroke_w=0 opacity=10 stroke='' fill='#F7941E'
+  tag=9 id='(null)' eoff=241
+  tag=8 id='gRowM' eoff=242
+  tag=1 id='mRowM' eoff=249 rect=(9,8,49,43) stroke_w=1 opacity=10 stroke='#000000' fill='none'
+  tag=1 id='textPos' eoff=286 rect=(9,0,49,36) stroke_w=1 opacity=10 stroke='#7E000A' fill='none'
+  tag=1 id='fontBold' eoff=325 rect=(62,12,78,48) stroke_w=1 opacity=10 stroke='#000000' fill='none'
+  tag=1 id='' eoff=365 rect=(5,3,57,46) stroke_w=0 opacity=10 stroke='' fill='#F7941E'
+  tag=9 id='(null)' eoff=393
+  tag=8 id='gRowR' eoff=394
+  tag=1 id='mRowR' eoff=401 rect=(55,8,57,43) stroke_w=1 opacity=10 stroke='#000000' fill='none'
+  tag=1 id='' eoff=438 rect=(51,8,56,43) stroke_w=0 opacity=10 stroke='' fill='#F7941E'
+  tag=9 id='(null)' eoff=466
+  tag=8 id='gBotL' eoff=467
+  tag=1 id='mBotL' eoff=474 rect=(1,46,3,48) stroke_w=1 opacity=10 stroke='#000000' fill='none'
+  tag=9 id='(null)' eoff=511
+  tag=8 id='gBotM' eoff=512
+  tag=1 id='mBotM' eoff=519 rect=(9,46,49,48) stroke_w=1 opacity=10 stroke='#000000' fill='none'
+  tag=9 id='(null)' eoff=556
+  tag=8 id='gBotR' eoff=557
+  tag=1 id='mBotR' eoff=564 rect=(55,46,57,48) stroke_w=1 opacity=10 stroke='#000000' fill='none'
+  tag=9 id='(null)' eoff=601
+  tag=8 id='gTopM' eoff=602
+  tag=1 id='mTopM' eoff=609 rect=(10,1,50,3) stroke_w=1 opacity=10 stroke='#000000' fill='none'
+  tag=9 id='(null)' eoff=646

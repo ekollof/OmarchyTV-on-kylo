@@ -1586,6 +1586,14 @@ in `#261719`. Live-DB full-image AE0.0619%/MAE8 0.158 against the stock
 Twitter capture; label glyphs match exactly but both Twitter and YouTube
 Music are 2px left (residual, not patched to the capture). Focused
 `make -j24 check-ui-apps-grid` passes. STOCK-APPS-GRID-PARITY follow-up.
+2026-11-17: the 2 px cause was ink-bbox centring; the firmware centre path
+uses physical width + first-bearing adjustment. `common/apps_label.c` now
+calls `oa_font_text_draw_line` alignment 3, `check-apps-label` distinguishes
+the rules (old placement exits 134), and the re-rendered Twitter label bbox is
+918..998 vs stock 919..999 (1 px left, down from 2). The remaining pixel is
+the unreduced rowItems-377 text/mRowM HorizontalMaskScaleTransform; no fitted
++1. Full host suite rc=0. Evidence:
+artifacts/analysis/ui-apps-grid-label-2026-11-17/.
 
 CHANNEL-RUNTIME-ORDER-2026-11-05 (host/qemu + read-only fb1): added a
 channels module/parser for the recovered ACTIVECHANNELLIST XML (order-preserving,

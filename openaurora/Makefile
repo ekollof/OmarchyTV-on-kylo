@@ -936,10 +936,10 @@ $(BUILD)/modules/mod_ui_anim.so: $(call pic_objs,modules__mod_ui_anim,modules/ui
 	$(CC) -shared -o $@ $^ $(LDFLAGS) -lm
 $(eval $(call emit_pics,modules__mod_ui_anim,modules/ui_anim/ui_anim.c common/ui_anim.c,,include/openaurora/ui_anim.h))
 
-$(BUILD)/modules/mod_ui_vendor.so: $(call pic_objs,modules__mod_ui_vendor,modules/ui_vendor/ui_vendor.c core/service_query.c common/ui_anim.c common/binsvg.c common/font_bitmap.c common/font_pack.c common/font_text.c common/font_draw.c common/font_box.c common/text_origin.c common/svg_scrollbar.c common/menu_model.c common/json.c common/launcher_anim.c common/langprofile.c common/rtl_order.c)
+$(BUILD)/modules/mod_ui_vendor.so: $(call pic_objs,modules__mod_ui_vendor,modules/ui_vendor/ui_vendor.c core/service_query.c common/ui_anim.c common/binsvg.c common/font_bitmap.c common/font_pack.c common/font_text.c common/font_draw.c common/font_box.c common/text_origin.c common/apps_label.c common/svg_scrollbar.c common/menu_model.c common/json.c common/launcher_anim.c common/langprofile.c common/rtl_order.c)
 	@mkdir -p $(dir $@)
 	$(CC) -shared -o $@ $^ -pthread $(LDFLAGS) -lm
-$(eval $(call emit_pics,modules__mod_ui_vendor,modules/ui_vendor/ui_vendor.c core/service_query.c common/ui_anim.c common/binsvg.c common/font_bitmap.c common/font_pack.c common/font_text.c common/font_draw.c common/font_box.c common/text_origin.c common/svg_scrollbar.c common/menu_model.c common/json.c common/launcher_anim.c common/langprofile.c common/rtl_order.c,-fvisibility=hidden -pthread,include/openaurora/binsvg.h include/openaurora/ui_anim.h include/openaurora/font_bitmap.h include/openaurora/font_pack.h include/openaurora/font_text.h include/openaurora/font_draw.h include/openaurora/font_box.h include/openaurora/text_origin.h include/openaurora/canvas.h include/openaurora/svg_scrollbar.h include/openaurora/service_db.h include/openaurora/menu_model.h include/openaurora/json.h include/openaurora/launcher_anim.h include/openaurora/langprofile.h))
+$(eval $(call emit_pics,modules__mod_ui_vendor,modules/ui_vendor/ui_vendor.c core/service_query.c common/ui_anim.c common/binsvg.c common/font_bitmap.c common/font_pack.c common/font_text.c common/font_draw.c common/font_box.c common/text_origin.c common/apps_label.c common/svg_scrollbar.c common/menu_model.c common/json.c common/launcher_anim.c common/langprofile.c common/rtl_order.c,-fvisibility=hidden -pthread,include/openaurora/binsvg.h include/openaurora/ui_anim.h include/openaurora/font_bitmap.h include/openaurora/font_pack.h include/openaurora/font_text.h include/openaurora/font_draw.h include/openaurora/font_box.h include/openaurora/text_origin.h include/openaurora/apps_label.h include/openaurora/canvas.h include/openaurora/svg_scrollbar.h include/openaurora/service_db.h include/openaurora/menu_model.h include/openaurora/json.h include/openaurora/launcher_anim.h include/openaurora/langprofile.h))
 
 $(BUILD)/modules/mod_ui_engine.so: $(call pic_objs,modules__mod_ui_engine,modules/ui_engine/ui_engine.c)
 	@mkdir -p $(dir $@)
@@ -1826,6 +1826,15 @@ check-ui-apps-grid: $(BUILD)/tests/ui_live_cards ui-live-stage
 	@OA_TEST_MANY=1 $(BUILD)/tests/ui_live_cards $(ui-live-modules) synthetic "" apps
 check: check-ui-apps-grid
 
+$(BUILD)/tests/apps_label: tests/apps_label.c common/apps_label.c common/font_text.c common/font_draw.c common/font_bitmap.c include/openaurora/apps_label.h include/openaurora/font_text.h include/openaurora/font_bitmap.h include/openaurora/canvas.h
+	@mkdir -p $(dir $@)
+	$(CC) $(CPPFLAGS) $(CFLAGS) $(LDFLAGS) -o $@ $(filter %.c,$^)
+
+.PHONY: check-apps-label
+check-apps-label: $(BUILD)/tests/apps_label
+	@$(BUILD)/tests/apps_label
+check: check-apps-label
+
 ui-channels-modules = $(BUILD)/tests/ui-channels/modules
 .PHONY: check-ui-channels
 check-ui-channels: $(BUILD)/tests/ui_channels $(BUILD)/tests/ui_nav_display.so $(BUILD)/modules/mod_service_db.so $(BUILD)/modules/mod_ui_engine.so $(BUILD)/modules/mod_ui_vendor.so $(BUILD)/modules/mod_channels.so
@@ -2593,7 +2602,7 @@ $(BUILD)/egl-scene-probe: tools/display/egl-scene-probe.c common/scene_gles.c co
 	$(CC) $(CPPFLAGS) $(CFLAGS) -idirafter /usr/include $(LDFLAGS) -o $@ $(filter %.c,$^) $(EGL_PROBE_LIBS) -pthread -lm
 
 GLYPH_PROBE_SRC := tools/display/egl-glyph-probe.c common/scene_gles.c common/glyph_quad.c common/ui_anim.c common/font_box.c common/font_text.c common/font_draw.c common/font_bitmap.c common/font_pack.c common/text_origin.c
-GLYPH_PROBE_HDR := include/openaurora/scene_gles.h include/openaurora/glyph_quad.h include/openaurora/ui_anim.h include/openaurora/font_box.h include/openaurora/font_text.h include/openaurora/font_draw.h include/openaurora/font_bitmap.h include/openaurora/font_pack.h include/openaurora/text_origin.h include/openaurora/canvas.h
+GLYPH_PROBE_HDR := include/openaurora/scene_gles.h include/openaurora/glyph_quad.h include/openaurora/ui_anim.h include/openaurora/font_box.h include/openaurora/font_text.h include/openaurora/font_draw.h include/openaurora/font_bitmap.h include/openaurora/font_pack.h include/openaurora/text_origin.h include/openaurora/apps_label.h include/openaurora/canvas.h
 $(BUILD)/egl-glyph-probe: $(GLYPH_PROBE_SRC) $(GLYPH_PROBE_HDR)
 	@mkdir -p $(dir $@)
 	$(CC) $(CPPFLAGS) $(CFLAGS) -idirafter /usr/include $(LDFLAGS) -o $@ $(GLYPH_PROBE_SRC) $(EGL_PROBE_LIBS) -pthread -lm

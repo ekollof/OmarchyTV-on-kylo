@@ -1,5 +1,8 @@
 # Stock apps-grid oracle and measured parity — 2026-11-05
 
+Status: current (label-centring correction 2026-11-17)
+Last verified: 2026-11-17 (offline stock capture and host tests; no new TV run)
+
 First real stock-vs-offline comparison of the full-screen Apps page. The
 oracle is a read-only fb1 capture obtained after DIAL virtual-remote
 navigation; no display/fb1 write occurred.
@@ -162,6 +165,36 @@ stock; a 2px shift reduces the label-strip AE from 3.14 to 0.41 per pixel.
 That is recorded as a residual, not patched to the capture. Focused
 `make -j24 check-ui-apps-grid` passes; the scroll fix is verified offline
 against the on-TV oracle, not by a post-fix fb1 capture.
+
+### 2026-11-17 correction: physical-width centring
+
+The residual had a recovered cause, not a fitted offset. `SVGTextBox`/LineObj
+centres `floor((available - physicalWidth)/2) + firstAdjustment`
+(UI-HORIZONTAL-ORIGIN-2026-11-02), where `physicalWidth` includes the first
+and last bearing adjustments. The old `paint_app_label` centred the **ink
+bbox** instead, which shifts text with an asymmetric left bearing.
+
+`common/apps_label.c` now renders the label through
+`oa_font_text_draw_line` with alignment 3 and the full 310 px cell as the
+available width, returning the ink crop and its x offset. `ui_vendor` blits
+at `x + ink_x`. `check-apps-label` uses a synthetic font with a +4 left
+bearing: the recovered rule places the ink at x=116, ink centring at 114; the
+old placement exits 134 against the new test, so the defect is distinguished.
+
+Re-rendered offline with the dump DB, original thumbnails and the vendor font
+pack at `OA_APPS_GRID_SEL=22`, the focused Twitter ink bbox is 918..998
+against stock 919..999, down from 917..997: **1 px left, improved from 2 px**.
+The remaining pixel is not fitted. The `rowItems` BinSVG 377 defines `mRowM`
+(210,36,570,216) and `text` (236,214,564,254), and the button SVG 373 has
+`mRowM` (187,0,507,180); the HorizontalMaskScaleTransform mapping of that
+360-wide mask/text box onto the 310 px cell is not yet reduced to an exact
+text origin. Evidence and the raw rectangle dump are in
+`artifacts/analysis/ui-apps-grid-label-2026-11-17/`.
+
+The full-screen live-DB AE is not re-baselined: the current ui_vendor
+tile/focus geometry differs from the 2026-11-05 capture, so only the label
+bbox comparison above is meaningful. `check-apps-label` and the full host
+suite pass; no new TV run.
 
 ## Limits
 

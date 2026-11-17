@@ -261,6 +261,15 @@ plus glGenerateMipmap for UIImageScalingType 1..3, and setApplicationImage
 0xd21000 uses type 1. Host423 ok, verify45. Limits: exact vendor bitmap fonts;
 JPEG staging uses TurboJPEG FASTDCT; Mali's mip kernel is box-assumed; residual
 per-cell sampling/source differences; fb1 not HDMI/cold-start scanout.
+2026-11-17 correction: the focused app label's 2 px residual came from
+centring the ink bbox instead of the recovered physical width + first-bearing
+adjustment (UI-HORIZONTAL-ORIGIN). `common/apps_label.c` now uses
+`oa_font_text_draw_line` alignment 3 and a new `check-apps-label` test
+distinguishes the rules (old placement exits 134). Re-rendered label bbox is
+918..998 vs stock 919..999: 1 px left, down from 2. The remaining pixel needs
+the unreduced HorizontalMaskScaleTransform of the BinSVG 377 `text`
+(236,214,564,254) inside `mRowM` (210,36,570,216) onto the 310 px cell; do not
+fit a +1. Evidence: `artifacts/analysis/ui-apps-grid-label-2026-11-17/`.
 
 CHANNEL-RUNTIME-ORDER-2026-11-05: the channel UI now has a runtime-order
 path. A channels module parses the recovered ACTIVECHANNELLIST XML into an

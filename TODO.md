@@ -2687,7 +2687,12 @@ ARM checks are1771396 row renders,276 setters,536 image-ID/IDM,80 SVGImage,
       absent and renders focused non-Markt labels with EF41 font 4 in
       `#261719`. Full-image AE0.0619%/MAE8 0.158; focused `make -j24
       check-ui-apps-grid` passes. Limits: recorder/offline render, not a
-      post-fix fb1 capture; both focused labels remain 2px left of stock.
+      post-fix fb1 capture. 2026-11-17: the label residual was ink-bbox
+      centring; `common/apps_label.c` now uses the recovered physical-width
+      rule (`check-apps-label`, old placement exits 134), and the re-rendered
+      Twitter label is 1px left (918..998 vs 919..999), down from 2. The
+      remaining pixel needs the rowItems-377 text/mRowM mask transform; no
+      fitted +1.
 
 - [x] Vendor image-scaler parity: recovered the stock UI texture path from
       aurora.elf. hal::OpenGLGraphicsContext::createTexture 0xb32eb0 sets

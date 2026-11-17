@@ -56,6 +56,7 @@
 #include "openaurora/font_draw.h"
 #include "openaurora/font_pack.h"
 #include "openaurora/font_text.h"
+#include "openaurora/apps_label.h"
 #include "openaurora/font_box.h"
 
 #define MAX_CARDS 12
@@ -1680,49 +1681,14 @@ static void paint_app_label(struct ctx *c, int x, int y, int idx)
     const char *text = c->grid_labels[idx];
     if (!text[0])
         return;
-    int advance = 0, font_height = 0;
-    if (oa_font_text_measure(&c->app_font, text, 0, &advance) != 0 ||
-        advance < 1 || advance > APPS_CELL_W - 16 ||
-        oa_bitmap_font_height(&c->app_font, &font_height) != 0 ||
-        font_height < 1 || font_height > 128)
+    unsigned char *crop = NULL;
+    int ink_x = 0, w = 0, h = 0;
+    /* Firmware centres the physical text width, not the ink bbox. */
+    if (oa_apps_label_render(&c->app_font, text, APPS_CELL_W, 8,
+                             &crop, &ink_x, &w, &h) != 0)
         return;
-    const int margin = 8;
-    int width = advance + 2 * margin, height = font_height + 2 * margin;
-    unsigned char *buf = calloc((size_t)width * (size_t)height * 4u, 1);
-    if (!buf) return;
-    oa_canvas canvas = { buf, width, height };
-    static const uint8_t ink[4] = { 38, 23, 25, 255 };
-    if (oa_font_text_draw(&canvas, &c->app_font, text, margin, margin, ink,
-            0, NULL) != 0) {
-        free(buf);
-        return;
-    }
-    int minx = width, miny = height, maxx = -1, maxy = -1;
-    for (int py = 0; py < height; py++)
-        for (int px = 0; px < width; px++)
-            if (buf[((size_t)py * (size_t)width + (size_t)px) * 4u + 3u]) {
-                if (px < minx) minx = px;
-                if (px > maxx) maxx = px;
-                if (py < miny) miny = py;
-                if (py > maxy) maxy = py;
-            }
-    if (maxx < minx || maxy < miny) {
-        free(buf);
-        return;
-    }
-    int cw = maxx - minx + 1, ch = maxy - miny + 1;
-    unsigned char *crop = calloc((size_t)cw * (size_t)ch * 4u, 1);
-    if (!crop) {
-        free(buf);
-        return;
-    }
-    for (int py = 0; py < ch; py++)
-        memcpy(crop + (size_t)py * (size_t)cw * 4u,
-            buf + ((size_t)(miny + py) * (size_t)width + (size_t)minx) * 4u,
-            (size_t)cw * 4u);
-    c->d->blit(x + (APPS_CELL_W - cw) / 2, y + 189, cw, ch, crop);
+    c->d->blit(x + ink_x, y + 189, w, h, crop);
     free(crop);
-    free(buf);
 }
 
 /* SVGGrid::onDownKey moves the window by one row (columns) when the focused
