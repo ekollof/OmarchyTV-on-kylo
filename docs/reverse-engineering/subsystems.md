@@ -409,7 +409,11 @@ Evidence: [APP-MANAGER-KEYBOARD](../../artifacts/reports/APP-MANAGER-KEYBOARD-20
   ChannelListFilter popup (60,117,666,467 #494949, 70 px rows, 5 visible;
   CHANNEL_TYPE/TV-RADIO/FREE-PAY/A-Z/SORT items) behind `ui.channels_filter=1`,
   with `common/channel_filter.c` + `check-channel-filter` and the Dutch
-  `stock-filter.png`; applying it is open. Live EASI, paging and scanout
+  `stock-filter.png`; applying it is open. The edit tab opens the record-100
+  ChannelEditOptions pane (ADD_TO_HOME/MOVE/DELETE|REMOVE/EDIT_NAME/LOCK/
+  FAVOURITE/TAG/TAG_ALL with the recovered conditions) behind
+  `ui.channels_edit=1` (`common/channel_edit.c` + `check-channel-edit`, Dutch
+  `stock-edit.png`); its actions are open. Live EASI, paging and scanout
   remain open. Evidence: CHANNEL-LIST-GEOMETRY.
 - Stock EPG timeline: `DialogEPG.svg` (BinSVG 101) with
   `MultiServiceTimelineScheduleDialog`: title key `PROGRAM_GUIDE`, date

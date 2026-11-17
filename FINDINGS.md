@@ -367,6 +367,19 @@ inference (#481730) pending a capture; exact tab font/icons, selection, synopsis
 event image/bottom rows/wrapping, day navigation, live EIT and scanout remain
 open. Recorder evidence only.
 
+CHANNEL-EDIT-2026-11-18: `ChannelEditOptionsDialog` (internal
+`ChannelEditOptions`) uses `DialogEditOptionsList.svg` (BinSVG 100): panel
+0,35,780,1080 white, left strip 0,160,142,1080 #010101 at 6/10 (composed 103),
+content 142,160,782,1080 #3F0B13, list 152,211,768,1059. initialiseFields
+0x00e8decc adds, in order: ADD_TO_HOME (single selection, not at home),
+MOVE_TO_POSITION (multiple), DELETE/REMOVE (not Rovi, deletable; REMOVE for
+multiple), EDIT_NAME (editable, single), HLP_LOCK_UNLOCK,
+HLP_FAVOURITE_ADD_REMOVE + " " + FAVOURITES, HLP_TAG, HLP_TAG_ALL. Rows use the
+70 px settings step/66 px art. `common/channel_edit.c` + check-channel-edit
+cover the layout/catalogue/visibility/labels; `ui.channels_edit=1` opens the
+pane on Select over the edit tab (Up/Down/Select/Exit), and the option actions
+are not implemented. Dutch candidate stock-edit.png.
+
 CHANNEL-FILTER-2026-11-18: `ChannelListFilterSortDialog` (internal
 `ChannelListFilter`) uses `DialogFilterSortSelector.svg` (BinSVG 636): panel
 60,117,666,467 fill #494949 with #DCDCDC border. initialiseFields 0x00e8f1a4

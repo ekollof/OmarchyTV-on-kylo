@@ -37,6 +37,7 @@ static const char *config(void *p, const char *key, const char *def)
     if (!strcmp(key, "ui.text")) return "1";
     if (!strcmp(key, "ui.channels_stock")) return "1";
     if (!strcmp(key, "ui.channels_filter")) return "1";
+    if (!strcmp(key, "ui.channels_edit")) return "1";
     if (!strcmp(key, "i18n.profile")) return getenv("OA_CHANNELS_I18N_PROFILE");
     if (!strcmp(key, "i18n.language"))
         return getenv("OA_CHANNELS_I18N_LANG") ? getenv("OA_CHANNELS_I18N_LANG")
@@ -300,8 +301,9 @@ int main(int argc, char **argv)
                      255, 255, 255));
     assert(trace->blit_count() >= 20);
 
-    /* AdvancedChannelListDialog: Left/Right move the tab focus, and Select on
-     * a non-watch tab does not emit the tune action. */
+    /* AdvancedChannelListDialog: Left/Right move the tab focus. Select on the
+     * edit tab opens the record-100 edit-options pane (no tune action); Exit
+     * closes only the pane. */
     oa_key_event right = { .id = 22, .kind = OA_KEY_PRESS };
     host.api.emit(&host, OA_TOPIC_KEY, &right);
     oa_host_dispatch_posts(&host);
@@ -311,6 +313,21 @@ int main(int argc, char **argv)
     host.api.emit(&host, OA_TOPIC_KEY, &sel);
     oa_host_dispatch_posts(&host);
     assert(g_actions == 0);
+    assert(find_fill(trace, 0, 35, 780, 1045, 255, 255, 255));
+    assert(find_fill(trace, 0, 160, 142, 920, 103, 103, 103));
+    assert(find_fill(trace, 142, 160, 640, 920, 63, 11, 19));
+    assert(find_fill(trace, 152, 211, 616, 66, 254, 148, 25));
+    oa_key_event down2 = { .id = 19, .kind = OA_KEY_PRESS };
+    host.api.emit(&host, OA_TOPIC_KEY, &down2);
+    oa_host_dispatch_posts(&host);
+    assert(find_fill(trace, 152, 281, 616, 66, 254, 148, 25));
+    const char *ecap = getenv("OA_CHANNELS_EDIT_CAPTURE");
+    if (ecap && *ecap)
+        assert(!trace->capture(ecap));
+    oa_key_event exit_pane = { .id = 10, .kind = OA_KEY_PRESS };
+    host.api.emit(&host, OA_TOPIC_KEY, &exit_pane);
+    oa_host_dispatch_posts(&host);
+    assert(portal->screen() == 6);
     oa_key_event left = { .id = 21, .kind = OA_KEY_PRESS };
     host.api.emit(&host, OA_TOPIC_KEY, &left);
     oa_host_dispatch_posts(&host);
@@ -326,7 +343,6 @@ int main(int argc, char **argv)
     assert(find_fill(trace, 60, 117, 606, 350, 73, 73, 73));
     assert(find_fill(trace, 60, 117, 606, 1, 220, 220, 220));
     assert(find_fill(trace, 61, 117, 604, 66, 254, 148, 25));
-    oa_key_event down2 = { .id = 19, .kind = OA_KEY_PRESS };
     host.api.emit(&host, OA_TOPIC_KEY, &down2);
     oa_host_dispatch_posts(&host);
     assert(find_fill(trace, 61, 187, 604, 66, 254, 148, 25));
@@ -335,8 +351,7 @@ int main(int argc, char **argv)
     const char *fcap = getenv("OA_CHANNELS_FILTER_CAPTURE");
     if (fcap && *fcap)
         assert(!trace->capture(fcap));
-    oa_key_event exit_popup = { .id = 10, .kind = OA_KEY_PRESS };
-    host.api.emit(&host, OA_TOPIC_KEY, &exit_popup);
+    host.api.emit(&host, OA_TOPIC_KEY, &exit_pane);
     oa_host_dispatch_posts(&host);
     assert(portal->screen() == 6);
     host.api.emit(&host, OA_TOPIC_KEY, &left);

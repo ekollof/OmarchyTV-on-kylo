@@ -127,6 +127,34 @@ forwards Up/Down to the list; `onSelectPress` @0x00e7e2e4 dispatches
 action; the edit/filter panes and the GotoService dialog are recorded but not
 implemented, so Select on those panes logs and emits nothing.
 
+## Edit-options pane (record 100)
+
+`ChannelEditOptionsDialog` (internal name `ChannelEditOptions`) is opened by
+`displayEdit` and uses `DialogEditOptionsList.svg` (BinSVG 100): panel
+0,35,780,1080 white; left strip 0,160,142,1080 `#010101` at 6/10 (composed
+103,103,103); content 142,160,782,1080 `#3F0B13`; list 152,211,768,1059;
+dialogTitle is offscreen. `initialiseFields` @0x00e8decc adds the options in
+this order:
+
+| case | option | condition |
+|---|---|---|
+| 0 | ADD_TO_HOME | single selection and not already at home |
+| 1 | MOVE_TO_POSITION | multiple selection |
+| 2 | DELETE / REMOVE | not Rovi and deletable; DELETE single, REMOVE multiple |
+| 3 | EDIT_NAME | name editable and single selection |
+| 4 | HLP_LOCK_UNLOCK | always |
+| 5 | HLP_FAVOURITE_ADD_REMOVE + " " + FAVOURITES | always |
+| 6 | HLP_TAG | always |
+| 7 | HLP_TAG_ALL | always |
+
+Rows use the captured 70 px settings step and the 66 px row art (12 fit).
+`ui.channels_edit=1` (with `ui.channels_stock=1`) opens the pane on Select over
+the edit tab; Up/Down move the selection and Select/Exit close it. The option
+actions (move/delete/lock/rename/favourite/tag) are not implemented.
+`common/channel_edit.c` + `check-channel-edit` cover the layout, catalogue,
+visibility and DELETE/REMOVE label; `check-ui-channels-stock` drives the pane
+and `stock-edit.png` is the Dutch real-font candidate.
+
 ## Filter/sort popup (record 636)
 
 `ChannelListFilterSortDialog` (internal name `ChannelListFilter`) is opened by

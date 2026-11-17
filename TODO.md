@@ -2396,8 +2396,13 @@ DRM-PLANE-CONTRACT reports, indexed in artifacts/reports/README.md.
       ChannelListFilter popup (`common/channel_filter.c`,
       `check-channel-filter`; CHANNEL_TYPE/TV-RADIO/FREE-PAY/A-Z/SORT items,
       5 rows at the 70 px settings step; `ui.channels_filter=1`, Dutch
-      `stock-filter.png`). Open: live EASI LCN/visibility, applying the
-      filter, edit pane, GotoServiceDialog, paging, tuner/EPG/PVR and scanout.
+      `stock-filter.png`). 2026-11-18: the edit tab opens the record-100
+      ChannelEditOptions pane (`common/channel_edit.c`,
+      `check-channel-edit`; ADD_TO_HOME/MOVE/DELETE|REMOVE/EDIT_NAME/LOCK/
+      FAVOURITE/TAG/TAG_ALL with the recovered conditions, Dutch
+      `stock-edit.png`, `ui.channels_edit=1`). Open: live EASI
+      LCN/visibility, applying the filter, the edit actions,
+      GotoServiceDialog, paging, tuner/EPG/PVR and scanout.
 - [ ] Apps/browser/media integration, picture quality/FRC, network and Bluetooth.
 - [ ] Tuner/DVB-T/DVB-S, EPG/service lists, teletext/MHEG/interactive TV, PVR/
       timeshift/playback, CI+/conditional access and associated persistence.

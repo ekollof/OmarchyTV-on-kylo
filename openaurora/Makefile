@@ -936,10 +936,10 @@ $(BUILD)/modules/mod_ui_anim.so: $(call pic_objs,modules__mod_ui_anim,modules/ui
 	$(CC) -shared -o $@ $^ $(LDFLAGS) -lm
 $(eval $(call emit_pics,modules__mod_ui_anim,modules/ui_anim/ui_anim.c common/ui_anim.c,,include/openaurora/ui_anim.h))
 
-$(BUILD)/modules/mod_ui_vendor.so: $(call pic_objs,modules__mod_ui_vendor,modules/ui_vendor/ui_vendor.c core/service_query.c common/ui_anim.c common/binsvg.c common/font_bitmap.c common/font_pack.c common/font_text.c common/font_draw.c common/font_box.c common/text_origin.c common/apps_label.c common/channel_layout.c common/channel_filter.c common/pvr_layout.c common/pvr_space.c common/epg_layout.c common/svg_scrollbar.c common/menu_model.c common/json.c common/launcher_anim.c common/langprofile.c common/rtl_order.c)
+$(BUILD)/modules/mod_ui_vendor.so: $(call pic_objs,modules__mod_ui_vendor,modules/ui_vendor/ui_vendor.c core/service_query.c common/ui_anim.c common/binsvg.c common/font_bitmap.c common/font_pack.c common/font_text.c common/font_draw.c common/font_box.c common/text_origin.c common/apps_label.c common/channel_layout.c common/channel_filter.c common/channel_edit.c common/pvr_layout.c common/pvr_space.c common/epg_layout.c common/svg_scrollbar.c common/menu_model.c common/json.c common/launcher_anim.c common/langprofile.c common/rtl_order.c)
 	@mkdir -p $(dir $@)
 	$(CC) -shared -o $@ $^ -pthread $(LDFLAGS) -lm
-$(eval $(call emit_pics,modules__mod_ui_vendor,modules/ui_vendor/ui_vendor.c core/service_query.c common/ui_anim.c common/binsvg.c common/font_bitmap.c common/font_pack.c common/font_text.c common/font_draw.c common/font_box.c common/text_origin.c common/apps_label.c common/channel_layout.c common/channel_filter.c common/pvr_layout.c common/pvr_space.c common/epg_layout.c common/svg_scrollbar.c common/menu_model.c common/json.c common/launcher_anim.c common/langprofile.c common/rtl_order.c,-fvisibility=hidden -pthread,include/openaurora/binsvg.h include/openaurora/ui_anim.h include/openaurora/font_bitmap.h include/openaurora/font_pack.h include/openaurora/font_text.h include/openaurora/font_draw.h include/openaurora/font_box.h include/openaurora/text_origin.h include/openaurora/apps_label.h include/openaurora/channel_layout.h include/openaurora/channel_filter.h include/openaurora/pvr_layout.h include/openaurora/pvr_space.h include/openaurora/epg_layout.h include/openaurora/canvas.h include/openaurora/svg_scrollbar.h include/openaurora/service_db.h include/openaurora/menu_model.h include/openaurora/json.h include/openaurora/launcher_anim.h include/openaurora/langprofile.h))
+$(eval $(call emit_pics,modules__mod_ui_vendor,modules/ui_vendor/ui_vendor.c core/service_query.c common/ui_anim.c common/binsvg.c common/font_bitmap.c common/font_pack.c common/font_text.c common/font_draw.c common/font_box.c common/text_origin.c common/apps_label.c common/channel_layout.c common/channel_filter.c common/channel_edit.c common/pvr_layout.c common/pvr_space.c common/epg_layout.c common/svg_scrollbar.c common/menu_model.c common/json.c common/launcher_anim.c common/langprofile.c common/rtl_order.c,-fvisibility=hidden -pthread,include/openaurora/binsvg.h include/openaurora/ui_anim.h include/openaurora/font_bitmap.h include/openaurora/font_pack.h include/openaurora/font_text.h include/openaurora/font_draw.h include/openaurora/font_box.h include/openaurora/text_origin.h include/openaurora/apps_label.h include/openaurora/channel_layout.h include/openaurora/channel_filter.h include/openaurora/channel_edit.h include/openaurora/pvr_layout.h include/openaurora/pvr_space.h include/openaurora/epg_layout.h include/openaurora/canvas.h include/openaurora/svg_scrollbar.h include/openaurora/service_db.h include/openaurora/menu_model.h include/openaurora/json.h include/openaurora/launcher_anim.h include/openaurora/langprofile.h))
 
 $(BUILD)/modules/mod_ui_engine.so: $(call pic_objs,modules__mod_ui_engine,modules/ui_engine/ui_engine.c)
 	@mkdir -p $(dir $@)
@@ -1845,9 +1845,9 @@ check-ui-channels: $(BUILD)/tests/ui_channels $(ui-channels-modules)
 	@$(BUILD)/tests/ui_channels $(ui-channels-modules)
 check: check-ui-channels
 
-$(BUILD)/tests/ui_channels_stock: tests/ui_channels_stock.c tests/ui_nav_trace.h core/host.h include/openaurora/services.h include/openaurora/ui_engine.h include/openaurora/channel_layout.h include/openaurora/svg_scrollbar.h common/channel_layout.c common/channel_filter.c common/pvr_layout.c common/pvr_space.c common/epg_layout.c common/svg_scrollbar.c $(filter-out $(BUILD)/core/main.o,$(CORE_OBJ))
+$(BUILD)/tests/ui_channels_stock: tests/ui_channels_stock.c tests/ui_nav_trace.h core/host.h include/openaurora/services.h include/openaurora/ui_engine.h include/openaurora/channel_layout.h include/openaurora/svg_scrollbar.h common/channel_layout.c common/channel_filter.c common/channel_edit.c common/pvr_layout.c common/pvr_space.c common/epg_layout.c common/svg_scrollbar.c $(filter-out $(BUILD)/core/main.o,$(CORE_OBJ))
 	@mkdir -p $(dir $@)
-	$(CC) $(CPPFLAGS) $(CFLAGS) -Icore -Itests -Ithird_party $(LDFLAGS) -o $@ tests/ui_channels_stock.c common/channel_layout.c common/channel_filter.c common/pvr_layout.c common/pvr_space.c common/epg_layout.c common/svg_scrollbar.c $(filter %.o,$^) $(LDLIBS) \
+	$(CC) $(CPPFLAGS) $(CFLAGS) -Icore -Itests -Ithird_party $(LDFLAGS) -o $@ tests/ui_channels_stock.c common/channel_layout.c common/channel_filter.c common/channel_edit.c common/pvr_layout.c common/pvr_space.c common/epg_layout.c common/svg_scrollbar.c $(filter %.o,$^) $(LDLIBS) \
 	  $(if $(filter tv,$(TARGET)),-L$(VENDOR_LIB)) $(SQLITE_LIBS)
 
 .PHONY: check-ui-channels-stock
@@ -1917,6 +1917,15 @@ $(BUILD)/tests/channel_filter: tests/channel_filter.c common/channel_filter.c in
 check-channel-filter: $(BUILD)/tests/channel_filter
 	@$(BUILD)/tests/channel_filter
 check: check-channel-filter
+
+$(BUILD)/tests/channel_edit: tests/channel_edit.c common/channel_edit.c include/openaurora/channel_edit.h
+	@mkdir -p $(dir $@)
+	$(CC) $(CPPFLAGS) $(CFLAGS) $(LDFLAGS) -o $@ $(filter %.c,$^)
+
+.PHONY: check-channel-edit
+check-channel-edit: $(BUILD)/tests/channel_edit
+	@$(BUILD)/tests/channel_edit
+check: check-channel-edit
 
 $(BUILD)/tests/pvr_layout: tests/pvr_layout.c common/pvr_layout.c include/openaurora/pvr_layout.h
 	@mkdir -p $(dir $@)
@@ -2703,7 +2712,7 @@ $(BUILD)/egl-scene-probe: tools/display/egl-scene-probe.c common/scene_gles.c co
 	$(CC) $(CPPFLAGS) $(CFLAGS) -idirafter /usr/include $(LDFLAGS) -o $@ $(filter %.c,$^) $(EGL_PROBE_LIBS) -pthread -lm
 
 GLYPH_PROBE_SRC := tools/display/egl-glyph-probe.c common/scene_gles.c common/glyph_quad.c common/ui_anim.c common/font_box.c common/font_text.c common/font_draw.c common/font_bitmap.c common/font_pack.c common/text_origin.c
-GLYPH_PROBE_HDR := include/openaurora/scene_gles.h include/openaurora/glyph_quad.h include/openaurora/ui_anim.h include/openaurora/font_box.h include/openaurora/font_text.h include/openaurora/font_draw.h include/openaurora/font_bitmap.h include/openaurora/font_pack.h include/openaurora/text_origin.h include/openaurora/apps_label.h include/openaurora/channel_layout.h include/openaurora/channel_filter.h include/openaurora/pvr_layout.h include/openaurora/pvr_space.h include/openaurora/epg_layout.h include/openaurora/canvas.h
+GLYPH_PROBE_HDR := include/openaurora/scene_gles.h include/openaurora/glyph_quad.h include/openaurora/ui_anim.h include/openaurora/font_box.h include/openaurora/font_text.h include/openaurora/font_draw.h include/openaurora/font_bitmap.h include/openaurora/font_pack.h include/openaurora/text_origin.h include/openaurora/apps_label.h include/openaurora/channel_layout.h include/openaurora/channel_filter.h include/openaurora/channel_edit.h include/openaurora/pvr_layout.h include/openaurora/pvr_space.h include/openaurora/epg_layout.h include/openaurora/canvas.h
 $(BUILD)/egl-glyph-probe: $(GLYPH_PROBE_SRC) $(GLYPH_PROBE_HDR)
 	@mkdir -p $(dir $@)
 	$(CC) $(CPPFLAGS) $(CFLAGS) -idirafter /usr/include $(LDFLAGS) -o $@ $(GLYPH_PROBE_SRC) $(EGL_PROBE_LIBS) -pthread -lm

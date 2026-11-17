@@ -1633,7 +1633,13 @@ CHANNEL_TYPE/FILTER_TV_RADIO_LABEL/FREE_PAY_LABEL/FILTER_LETTER_LABEL/
 SORT_LABEL items; `common/channel_filter.c` + check-channel-filter and the
 `ui.channels_filter=1` popup (Select on the filter tab; Up/Down item,
 Left/Right value wrap; Select/Exit close; apply not implemented) with the
-Dutch stock-filter.png.
+Dutch stock-filter.png. 2026-11-18 CHANNEL-EDIT: ChannelEditOptionsDialog
+(ChannelEditOptions) uses BinSVG 100 (panel 0,35,780,1080, strip
+0,160,142,1080 #010101@6/10 -> 103, content 142..782 #3F0B13, list
+152,211,768,1059) with ADD_TO_HOME/MOVE_TO_POSITION/DELETE|REMOVE/EDIT_NAME/
+LOCK/FAVOURITE+TAG/TAG_ALL and the recovered visibility conditions
+(`common/channel_edit.c` + check-channel-edit); `ui.channels_edit=1` opens it
+on Select over the edit tab, actions not implemented, Dutch stock-edit.png.
 
 PVR-STOCK-LAYOUT-2026-11-17: `DialogPlayList.svg` (BinSVG 692) gives the stock
 PVR list (panel #DCDBDA, header #481730 9/10, rows 26,222 1860x66 pitch75,

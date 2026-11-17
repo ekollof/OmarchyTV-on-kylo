@@ -59,6 +59,7 @@
 #include "openaurora/apps_label.h"
 #include "openaurora/channel_layout.h"
 #include "openaurora/channel_filter.h"
+#include "openaurora/channel_edit.h"
 #include "openaurora/pvr_layout.h"
 #include "openaurora/epg_layout.h"
 #include "openaurora/pvr_space.h"
@@ -227,6 +228,9 @@ struct ctx {
     int chan_tab;                    /* stock channel tab: 0 watch, 1 edit, 2 filter */
     int chan_filter_open;            /* record-636 filter/sort popup is open */
     oa_channel_filter chan_filter;
+    int chan_edit_open;              /* record-100 edit-options pane is open */
+    int chan_edit_sel;
+    oa_channel_edit_inputs chan_edit_in;
     int text_on;                     /* live labels/values loaded (ui.text=1) */
     struct oa_font_pack font_pack;
     unsigned char *font_data, *font_num_data;
@@ -1917,6 +1921,7 @@ static void channel_text_blit(struct ctx *c, const char *text, int x, int y,
 
 static void paint_channels_stock(struct ctx *c);
 static void paint_channel_filter_popup(struct ctx *c);
+static void paint_channel_edit_panel(struct ctx *c);
 static int stock_channel_fonts(struct ctx *c);
 
 static void paint_channels(struct ctx *c)
@@ -2255,6 +2260,7 @@ static void paint_channels_stock(struct ctx *c)
     if (channels) c->api->release(c->api->priv, OA_SVC_CHANNELS);
     free(order);
     paint_channel_filter_popup(c);
+    paint_channel_edit_panel(c);
     c->scene_painted = 1;
     if (d->present() != 0) {
         c->api->log(c->api->priv, OA_LOG_ERROR,
@@ -2440,6 +2446,84 @@ static void paint_channel_filter_popup(struct ctx *c)
                 channel_text_at(c, font, value, l.panel.x1 - 20 - advance, ty,
                                 l.text_rgb[0], l.text_rgb[1], l.text_rgb[2]);
         }
+    }
+    if (i18n) c->api->release(c->api->priv, OA_SVC_I18N);
+}
+
+/* Record-100 edit-options pane (ChannelEditOptionsDialog). Drawn over the
+ * channel screen before its present. Visible options follow the recovered
+ * switch conditions; the runtime flags are the project defaults (single
+ * selection, editable name, deletable, not at home, no Rovi). */
+static void paint_channel_edit_panel(struct ctx *c)
+{
+    if (!c || !c->d || !c->chan_edit_open)
+        return;
+    if (atoi(c->api->config_get(c->api->priv, "ui.channels_edit", "0")) != 1)
+        return;
+    oa_channel_edit_layout l;
+    if (oa_channel_edit_layout_default(&l) != 0)
+        return;
+    const oa_ui_engine_iface *d = c->d;
+    d->fill(l.panel.x, l.panel.y, l.panel.x1 - l.panel.x,
+            l.panel.y1 - l.panel.y, l.panel_rgb[0], l.panel_rgb[1],
+            l.panel_rgb[2]);
+    d->fill(l.strip.x, l.strip.y, l.strip.x1 - l.strip.x,
+            l.strip.y1 - l.strip.y, l.strip_rgb[0], l.strip_rgb[1],
+            l.strip_rgb[2]);
+    d->fill(l.content.x, l.content.y, l.content.x1 - l.content.x,
+            l.content.y1 - l.content.y, l.content_rgb[0], l.content_rgb[1],
+            l.content_rgb[2]);
+
+    unsigned visible[OA_CHANNEL_EDIT_OPTIONS];
+    unsigned count = 0;
+    if (oa_channel_edit_visible(&c->chan_edit_in, visible,
+                                OA_CHANNEL_EDIT_OPTIONS, &count) != 0 ||
+        count == 0)
+        return;
+    if (c->chan_edit_sel < 0) c->chan_edit_sel = 0;
+    if (c->chan_edit_sel >= (int)count) c->chan_edit_sel = (int)count - 1;
+
+    const oa_i18n_iface *i18n = c->api->lookup(c->api->priv, OA_SVC_I18N, 1);
+    (void)tab_font_open(c);
+    const struct oa_bitmap_font *font = c->tab_font_on ? &c->tab_font
+                                                       : &c->font;
+    int font_height = 0;
+    (void)oa_bitmap_font_height(font, &font_height);
+    int first = c->chan_edit_sel >= l.visible_rows
+                    ? c->chan_edit_sel - l.visible_rows + 1 : 0;
+    for (int row = 0; row < l.visible_rows; row++) {
+        int index = first + row;
+        if (index >= (int)count)
+            break;
+        int y = l.list.y + row * l.row_pitch;
+        int focused = index == c->chan_edit_sel;
+        if (focused)
+            d->fill(l.list.x, y, l.list.x1 - l.list.x, l.row_height,
+                    l.focus_rgb[0], l.focus_rgb[1], l.focus_rgb[2]);
+        const char *key = oa_channel_edit_label(visible[index],
+                                                c->chan_edit_in.multiple_selection);
+        char label[128];
+        if (visible[index] == 5) {
+            const char *fav = tab_label(i18n, "HLP_FAVOURITE_ADD_REMOVE",
+                                        "HLP_FAVOURITE_ADD_REMOVE");
+            const char *favs = tab_label(i18n, "FAVOURITES", "FAVOURITES");
+            snprintf(label, sizeof label, "%s %s", fav, favs);
+            key = label;
+        } else if (key) {
+            snprintf(label, sizeof label, "%s", tab_label(i18n, key, key));
+            key = label;
+        }
+        if (!key)
+            continue;
+        int ty = y + (l.row_height - font_height) / 2;
+        if (ty < l.list.y) ty = l.list.y;
+        if (focused)
+            channel_text_at(c, font, key, l.list.x + 12, ty,
+                            l.focus_text_rgb[0], l.focus_text_rgb[1],
+                            l.focus_text_rgb[2]);
+        else
+            channel_text_at(c, font, key, l.list.x + 12, ty,
+                            l.text_rgb[0], l.text_rgb[1], l.text_rgb[2]);
     }
     if (i18n) c->api->release(c->api->priv, OA_SVC_I18N);
 }
@@ -4059,6 +4143,26 @@ static void move_key(struct ctx *c, uint8_t id)
             if (c->d) paint(c);
             return;
         }
+        if (c->chan_edit_open) {
+            unsigned visible[OA_CHANNEL_EDIT_OPTIONS];
+            unsigned count = 0;
+            (void)oa_channel_edit_visible(&c->chan_edit_in, visible,
+                                          OA_CHANNEL_EDIT_OPTIONS, &count);
+            if (id == 19 || id == 20) {
+                c->chan_edit_sel += id == 19 ? 1 : -1;
+                if (c->chan_edit_sel < 0) c->chan_edit_sel = 0;
+                if (count && c->chan_edit_sel >= (int)count)
+                    c->chan_edit_sel = (int)count - 1;
+            } else if (id == 53 || id == 0x8a) {
+                c->chan_edit_open = 0;
+                c->api->log(c->api->priv, OA_LOG_INFO,
+                            "channel edit action is not implemented");
+            } else if (id == 10 || id == 48) {
+                c->chan_edit_open = 0;
+            }
+            if (c->d) paint(c);
+            return;
+        }
         if (id == 10 || id == 48) {
             c->screen = SCREEN_PORTAL;
             if (c->d) paint(c);
@@ -4118,7 +4222,17 @@ static void move_key(struct ctx *c, uint8_t id)
                                         : list->rows[order[c->chan_sel]].name;
                 c->api->emit(c->api->priv, OA_TOPIC_ACTION, &act);
             } else if (c->chan_tab != 0) {
-                if (c->chan_tab == 2 &&
+                if (c->chan_tab == 1 &&
+                    atoi(c->api->config_get(c->api->priv,
+                                            "ui.channels_edit", "0")) == 1) {
+                    memset(&c->chan_edit_in, 0, sizeof c->chan_edit_in);
+                    c->chan_edit_in.single_selection = 1;
+                    c->chan_edit_in.name_editable = 1;
+                    c->chan_edit_in.deletable = 1;
+                    c->chan_edit_sel = 0;
+                    c->chan_edit_open = 1;
+                    if (c->d) paint(c);
+                } else if (c->chan_tab == 2 &&
                     atoi(c->api->config_get(c->api->priv,
                                             "ui.channels_filter", "0")) == 1) {
                     oa_channel_filter_default(&c->chan_filter);
