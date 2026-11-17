@@ -4506,10 +4506,16 @@ QEMU-COLD-DISPLAY-2026-11-16: `fake_fb_preload.c` has opt-in
 region and pan; `qemu-fb-real-check.sh` (valid initial var, full snapshot) still
 passes. Ioctl-boundary simulation only; no cold boot, scanout or TV acceptance.
 
-ROW-POSITION-2026-11-16: `EASIRect::EASIRect` @0x009a8004 packs two EASIPoints
-as {p1.x,p1.y,p2.x,p2.y}. `common/row_position.c` models the three
-instruction-recovered branches of `SVGListBoxBase::getRowPosition` @0x010bbaa8
-with an injected base-rect query; `check-row-position` and the full host suite
-pass (rc=0). It is pure and unwired because rowPos/mRowM field assignment is
-still unresolved; no stock-UI parity claim. Evidence in
+ROW-POSITION-2026-11-16, corrected 2026-11-17: `EASIRect::EASIRect`
+@0x009a8004 packs two EASIPoints as {p1.x,p1.y,p2.x,p2.y}.
+`common/row_position.c` models the three instruction-recovered branches of
+`SVGListBoxBase::getRowPosition` @0x010bbaa8 with an injected base-rect query.
+Correction: in the `+0xe8 == 0` branch the horizontal origin cancels
+(`-0x204` then `+p1.x`), so `p2.x = (rect_x1-rect_x0) - 0x208` and the row step
+is y-only; the first model wrongly added the step. `calculateHeight`
+@0x010bb7ec is the writer of +0x1f4/+0x1fc/+0x200/+0x20c (from renderBackground);
++0x1f8/+0x204/+0x208/+0x210 have no writer in this build outside constructor
+zeroing. `check-row-position` and the full host suite pass (rc=0); the old
+expression now fails the corrected test (exit 134). The helper stays pure and
+unwired; no stock-UI parity claim. Evidence in
 artifacts/analysis/ui-row-origin-2026-11-16/.

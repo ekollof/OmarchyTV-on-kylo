@@ -1963,15 +1963,19 @@ source/power/settings/services parity; remaining broadcast/CEC/apps/PQ/network
 features; complete interactive UI and native OmarchyTV. See TODO for individual
 acceptance tasks, not the “next experiment” paragraphs in historical reports.
 
-SUBLAUNCHER-MENU-TREE 2026-11-16: the previously open horizontal row-origin
-fields are consumed by `SVGListBoxBase::getRowPosition` @0x010bbaa8, not by an
-unknown transform. Its three branches and the exact arithmetic using
-+0x204/+0x208/+0x210, +0x20c and +0x1f4..+0x200 were re-decompiled and checked
-against ARM instructions; evidence is in
-`artifacts/analysis/ui-row-origin-2026-11-16/`. EASIRect::EASIRect @0x009a8004 packs `{p1.x,p1.y,p2.x,p2.y}`
-(instruction-checked). `common/row_position.c` now models the three branches
-with an injected query; `check-row-position` passes. It stays unwired because
-field assignment from rowPos/mRowM is still unresolved, and no stock-UI parity
+SUBLAUNCHER-MENU-TREE 2026-11-16, corrected 2026-11-17: the previously open
+horizontal row-origin fields are consumed by `SVGListBoxBase::getRowPosition`
+@0x010bbaa8, not by an unknown transform. Its three branches and the exact
+arithmetic using +0x204/+0x208/+0x210, +0x20c and +0x1f4..+0x200 were
+re-decompiled and checked against ARM instructions; evidence is in
+`artifacts/analysis/ui-row-origin-2026-11-16/`. In the `+0xe8 == 0` branch the
+horizontal origin cancels (`-0x204` then `+p1.x`), so `p2.x` is
+`(rect_x1-rect_x0) - 0x208`; the row step is y-only. The first model added the
+row step there and the corrected test now rejects that (old expression exits
+134). `calculateHeight` @0x010bb7ec is the writer of +0x1f4/+0x1fc/+0x200/+0x20c;
++0x1f8/+0x204/+0x208/+0x210 have no writer in this build outside constructor
+zeroing. `common/row_position.c` models all three branches with an injected
+query and `check-row-position` passes; it stays unwired, and no stock-UI parity
 is claimed.
 
 ## Useful provenance

@@ -14,9 +14,12 @@ extern "C" {
  * EASIRect packs two EASIPoints as {p1.x,p1.y,p2.x,p2.y}
  * (EASIRect::EASIRect @0x009a8004). The virtual vtable+0x28 query supplies a
  * base rect; the three branches are selected by the bytes at this+0xe8/+0xe9.
- * This helper performs no UI, SVG or host I/O: the caller injects the query
- * and the raw field values. Field assignment from rowPos/mRowM is still
- * unresolved, so this is not a stock-UI parity claim.
+ * The vertical fields are produced by calculateHeight @0x010bb7ec
+ * (+0x1f4/+0x1fc/+0x200/+0x20c from SVG rectangles, called from
+ * renderBackground); +0x1f8/+0x204/+0x208/+0x210 have no producer in this
+ * build beyond the constructor's zeroing, so the caller still supplies every
+ * field explicitly. This helper performs no UI, SVG or host I/O. It is not a
+ * stock-UI parity claim.
  */
 typedef struct {
     void *ud;

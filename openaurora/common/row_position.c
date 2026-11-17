@@ -14,11 +14,15 @@ int oa_row_position(const oa_row_position_io *io,
         return -EIO;
 
     if (!f->e8) {
-        /* Branch at 0x010bbb5e: x is +0x204, step comes from +0x1f4. */
+        /* Branch at 0x010bbb5e: x is +0x204, step comes from +0x1f4.
+         * 010bbb8e..010bbb98 computes
+         * (rect.x1 - rect.x0) - f204 - f208 + p1.x; p1.x is f204, so the
+         * horizontal term reduces to (rect.x1 - rect.x0) - f208. Do not add
+         * the row step here: that was a model defect caught 2026-11-17. */
         int step = f->f1f4 * index + f->f1fc;
         p1[0] = f->f204;
         p1[1] = step;
-        p2[0] = (rect[2] - rect[0]) - f->f204 - f->f208 + p1[1];
+        p2[0] = (rect[2] - rect[0]) - f->f208;
         p2[1] = step + f->f1f8;
     } else {
         int step;
@@ -29,7 +33,9 @@ int oa_row_position(const oa_row_position_io *io,
         p1[0] = step;
         p1[1] = f->f1fc;
         p2[0] = step + f->f210;
-        p2[1] = (rect[3] - rect[1]) - f->f1fc - f->f200 + f->f1fc;
+        /* 010bbb1a..010bbb1c: (y1-y0) - f1fc - f200 + f1fc; the f1fc terms
+         * cancel and only the -f200 inset remains. */
+        p2[1] = (rect[3] - rect[1]) - f->f200;
     }
 
     /* EASIRect(EASIPoint p1, EASIPoint p2). */

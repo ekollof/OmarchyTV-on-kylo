@@ -1,7 +1,7 @@
 # Firmware menu tree, JSON model and ui.menu service — 2026-11-06
 
-Status: current (row-position arithmetic added 2026-11-16)
-Last verified: 2026-11-16 (firmware instruction check; host/qemu only for the
+Status: current (row-position arithmetic recovered 2026-11-16, corrected 2026-11-17)
+Last verified: 2026-11-17 (firmware instruction check; host/qemu only for the
 existing service)
 
 This closes the “one menu leads to another” decoding gap for the portal
@@ -121,15 +121,28 @@ against its ARM instructions (`--asm`). It reads the horizontal origin fields
 directly and has three branches selected by the bytes at `this+0xe8` and
 `this+0xe9`:
 
-- `+0xe8 == 0`: x is `this+0x204`; the row step is
-  `this+0x1f4 * index + this+0x1fc`; the second coordinate adds `this+0x1f8`;
-  a virtual `vtable+0x28` rect query adjusts the other coordinate by
-  `(rect_x1 - rect_x0) - this+0x204 - this+0x208`.
-- `+0xe8 != 0`, `+0xe9 == 0`: x is `this+0x20c * index + this+0x204`, with
-  `this+0x210` added later; y starts at `this+0x1fc` and is adjusted by the
-  virtual rect query minus `this+0x200`.
-- `+0xe8 != 0`, `+0xe9 != 0`: x is
-  `(rect_x1 - this+0x204) - (index * this+0x20c + this+0x20c)`.
+- `+0xe8 == 0`: `p1 = (this+0x204, this+0x1f4*index + this+0x1fc)`;
+  `p2 = ((rect_x1 - rect_x0) - this+0x208,
+  this+0x1f4*index + this+0x1fc + this+0x1f8)`. The sequence at
+  `0x010bbb8e..0x010bbb98` subtracts `+0x204` and then adds `p1.x`, which is
+  `+0x204`, so the horizontal origin cancels and only the `+0x208` inset
+  remains. The row step belongs to the y coordinate only.
+- `+0xe8 != 0`, `+0xe9 == 0`: `p1 = (this+0x20c*index + this+0x204,
+  this+0x1fc)`; `p2 = (p1.x + this+0x210, (rect_y1 - rect_y0) - this+0x200)`.
+- `+0xe8 != 0`, `+0xe9 != 0`: `p1.x = rect_x1 - this+0x204 -
+  (index+1)*this+0x20c`, `p1.y = this+0x1fc`; `p2 = (p1.x + this+0x210,
+  (rect_y1 - rect_y0) - this+0x200)`.
+
+Producer (2026-11-17): `SVGListBoxBase::calculateHeight` @ `0x010bb7ec`
+(called from `renderBackground` at `0x010bd3b2`) writes `+0x1f4` (row step),
+`+0x1fc`, `+0x200` and `+0x20c` from SVG rectangles; instruction dump in
+`artifacts/analysis/ui-row-origin-2026-11-16/calculate_height.dump.txt`.
+`+0x1f8/+0x204/+0x208/+0x210` have no writer in this build outside the
+constructor's zeroing: whole-binary stores with immediates 516/520/524/528
+appear only in unrelated static-table, curl/network and picture-control code,
+and none of the derived list-box constructors touch them. The likely reading is
+that the stock list box always runs branch `+0xe8 == 0` with zero horizontal
+fields, but that is an inference, not an accepted stock-UI claim.
 
 The decompile and instruction dump are preserved in
 `artifacts/analysis/ui-row-origin-2026-11-16/getrowpos.decompile.txt` and
@@ -140,20 +153,22 @@ previously open `+0x204/+0x208/+0x210` item: the fields are consumed by
 `artifacts/analysis/ui-row-origin-2026-11-16/easirect_ctor.dump.txt`). The
 `SVGListBoxBase` constructor @ `0x010bd120`
 (`artifacts/analysis/ui-row-origin-2026-11-16/svglb_ctor.dump.txt`) clears
-`+0x204/+0x208/+0x20c/+0x210`
-and `+0x1ec..+0x200` to zero; it does not derive them from a resource. A later
-setter/configurator path assigns them and is still unrecovered. A scan of the
-list-box code range for direct `str` immediates 516/520/524/528 found none, so
-the assignment is likely a block copy or a derived-class path rather than a
-simple field setter. The exact producer remains open; no replacement geometry
-is wired. With that
-and the three branches, `common/row_position.c` is a pure injected-query model
-of `getRowPosition`; `check-row-position` covers all three branches, the point
-packing and query failure, and the full host suite passes (rc=0). This is a
-geometry primitive only: where `+0x204/+0x208/+0x210` are assigned from
-`rowPos`/`mRowM` is still unresolved, so the helper takes explicit fields and
-is not wired into the UI. No stock-UI parity is claimed; the existing
-`common/widget_layout.c` continues to take an explicit absolute row window.
+`+0x1ec..+0x200` and `+0x204/+0x208/+0x20c/+0x210` to zero; it does not derive
+them from a resource. `common/row_position.c` is a pure injected-query model of
+all three branches; `check-row-position` covers the branches, the point packing
+and query failure, and the full host suite passes (rc=0).
+
+2026-11-17 correction: the first committed model added `p1.y` (the row step) to
+branch-0 `p2.x`; the instructions add `p1.x` (`+0x204`), which cancels the
+`+0x204` subtrahend. The model and test are fixed, and the test now uses a
+nonzero step and index and a second index-0 case. Re-running the old expression
+against the corrected test fails at the branch-0 assertion (exit 134), so the
+defect cannot silently return.
+
+The helper still takes explicit fields and is not wired into the UI: the
+horizontal producers are absent, so wiring it would only restate zeros. No
+stock-UI parity is claimed; the existing `common/widget_layout.c` continues to
+take an explicit absolute row window.
 
 ## JSON runtime model
 
