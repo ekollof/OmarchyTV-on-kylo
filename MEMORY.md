@@ -1,5 +1,17 @@
 # Current project state — last verified 2026-11-07
 
+2026-11-19 filter popup + ladder: a second read-only DIAL+fb1 window captured
+the stock channel filter popup — record 636 rects (60,117,666,467 #494949,
+70 px/5 rows) are authored layout metadata; the shared list box paints
+(142,160)..(778,1079) #3F0B13, a 75 px step, a 614x65 #FE9419 focus bar at
+(152,228) and ten rows (the five extra rows are literals in the catalogue).
+`check-channel-filter`/`check-ui-channels-stock` pass and stock-filter.png was
+regenerated. Record 151 was re-read from BinSVG and matches the model; its
+capture is EIT/RF-blocked. The host `plat_audio` test now asserts that GPIO/
+IIC failures set only their own stage-error bits and do not gate later stages
+or plat-ready, with the exact GPIO-before-IIC one-owner order. No TV state was
+changed; the set returned to standby.
+
 Owner constraint, 2026-11-19: no RF/antenna source is available. Tuner
 RF/lock/scan acceptance and populated-EIT stock EPG/PVR captures are
 environment-blocked; do not plan them expecting an antenna or signal

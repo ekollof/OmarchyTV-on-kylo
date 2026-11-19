@@ -31,6 +31,7 @@ enum ev {
 static enum ev g_events[32];
 static unsigned g_count;
 static int g_fail;                  /* bit0 protect, bit1 mixer, bit2 proxy */
+static int g_gpio_fail, g_iic_fail;  /* HAL GPIO/IIC stage failures */
 static int g_drm;                   /* plat.drm_init config */
 static const oa_plat_iface *g_service;
 static char g_log[4096];
@@ -63,8 +64,8 @@ int Hal_Video_Vpltio_SendCmd(int cmd, int a, void *buf, int b, int c, int d,
     push(EV_SENDCMD);
     return 0;
 }
-int Hal_Gpio_Init(void) { push(EV_GPIO); return 0; }
-int Hal_Iic_Init(void) { push(EV_IIC); return 0; }
+int Hal_Gpio_Init(void) { push(EV_GPIO); return g_gpio_fail ? -9 : 0; }
+int Hal_Iic_Init(void) { push(EV_IIC); return g_iic_fail ? -9 : 0; }
 void NDAL_VideoExt_OpenDevice(int flag, unsigned index)
 {
     assert(flag == 0 && index == 10);
@@ -111,6 +112,7 @@ static void reset(int fail, int drm)
 {
     oa_plat_test_reset_common();
     g_fail = fail;
+    g_gpio_fail = g_iic_fail = 0;
     g_drm = drm;
     g_count = 0;
     g_log_at = 0;
@@ -188,7 +190,35 @@ int main(void)
     m->stop(ctx);
     m->destroy(ctx);
 
+    /* Cold-start stage ladder, GPIO/IIC first: a failed device stage is
+     * logged in its own error bit and never gates the later stages or the
+     * plat-ready publication (vendor DEV_INI_Init is best-effort). */
+    reset(0, 1);
+    g_gpio_fail = 1;
+    assert(!m->init(&api, &ctx) && ctx);
+    assert(m->start(ctx) == 0);
+    expect(full, sizeof full / sizeof full[0]);
+    assert(g_service && g_service->is_ready() == 1);
+    assert(g_service->stage_errors() == (1u << 2));   /* STAGE_GPIO */
+    assert(strstr(g_log, "Hal_Gpio_Init failed"));
+    assert(!strstr(g_log, "Hal_Iic_Init failed"));
+    m->stop(ctx);
+    m->destroy(ctx);
+
+    reset(0, 1);
+    g_gpio_fail = g_iic_fail = 1;
+    assert(!m->init(&api, &ctx) && ctx);
+    assert(m->start(ctx) == 0);
+    expect(full, sizeof full / sizeof full[0]);
+    assert(g_service && g_service->is_ready() == 1);
+    assert(g_service->stage_errors() == ((1u << 2) | (1u << 3)));
+    assert(strstr(g_log, "Hal_Gpio_Init failed") &&
+           strstr(g_log, "Hal_Iic_Init failed"));
+    m->stop(ctx);
+    m->destroy(ctx);
+
     puts("ok plat cold start: prelude returns do not gate; exact PLAT_DRV_INI_Init order; "
-         "Protect(0), byte DVIF, idempotent common init, takeover drm gate");
+         "Protect(0), byte DVIF, idempotent common init, takeover drm gate, "
+         "GPIO/IIC stage failures isolated");
     return 0;
 }

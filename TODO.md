@@ -81,8 +81,14 @@ maps the cold-start stages and the current stock-UI coverage.
       and live GPIO ownership open
       and non-layout-14 panel/TCON branches. Next: decide HAL-only acceptance vs
       those device-layer equivalents, then run the no-UI hardware ladder.
-      Report: COLD-START-SEQUENCE-2026-11-10. Do not use UI paint as cold-start
-      evidence. Hardware-only ladder 2026-11-10: `openaurora-cold-hw.conf` +
+      Report: COLD-START-SEQUENCE-2026-11-10. 2026-11-19: the host
+      `plat_audio` test now also covers the GPIO/IIC stage ladder — a failed
+      `Hal_Gpio_Init`/`Hal_Iic_Init` sets only its own stage-error bit, logs the
+      warning and still runs the later stages and publishes plat-ready, while
+      the exact GPIO-before-IIC one-owner order is asserted. The device-layer
+      `DEV_GPIO_Init`/`DEV_IIC_Init` equivalents remain disposed as not
+      applicable to the HAL-only path; real cold-boot acceptance is still
+      open. Do not use UI paint as cold-start evidence. Hardware-only ladder 2026-11-10: `openaurora-cold-hw.conf` +
       `stage-hw-profile.sh` (`hw0..hw4`) implement plat -> panel -> I2S MCLK ->
       SPI open -> NIM-DTV with no display/UI; `host.ready_after_autoload`
       writes the supervisor receipt only when every autoload start succeeds.
@@ -243,7 +249,13 @@ maps the cold-start stages and the current stock-UI coverage.
       Select/expiry lookup, Exit dismiss) and the show animation (probe ids
       0x39..0x40, slide down = type 5, 1000 ms, 150 ms tick, applied above
       fb1) are recovered and tested; the remaining gap is the renderer-level
-      transform itself. One stock
+      transform itself. 2026-11-19: a second read-only DIAL+fb1 window
+      captured the live channel filter popup: record 636's authored rects are
+      layout metadata, the shared list box paints #3F0B13 at
+      142,160..780,1080 with a 75 px step, 614x65 focus bar at 152,228 and ten
+      rows; the model/painter and stock-filter.png were corrected. The
+      `<`/`>` selectors and greyed ink remain unpainted; PVR/EPG option
+      captures (record 151) are EIT/RF-blocked. One stock
       "Toevoegen aan Thuis" action wrote settingsDB; both DB copies are
       archived, the visible home rail is unchanged, no DB write was attempted.
       Report: STOCK-UI-LIVE-CAPTURES-2026-11-19. Open: EPG/PVR populated stock
