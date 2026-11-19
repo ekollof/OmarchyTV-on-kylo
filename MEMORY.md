@@ -1,5 +1,13 @@
 # Current project state — last verified 2026-11-07
 
+2026-11-19 staged bundle: `build-tv-v3/full-replacement` (vendor-skin parity
+stack, 35 ARM modules, core `f481e8fa…`) built and its 66-entry hash manifest
+verified; `make TARGET=tv BUILD=build-tv-v3 check-staged-bundle` also checks
+ARM ELF type, module count/helpers and that plat.drm_init/source/cec/audio_amp
+are off. Nothing copied to the TV; takeover still needs owner authorization
+and a re-verified USB recovery path. Runbook/comparisons:
+STAGED-TAKEOVER-READY-2026-11-19.
+
 2026-11-19 source table: firmware instructions show the real per-path source
 state is `PLAT_VIU_NdVideoSetting`'s 7-slot table (path >6 clamps to 0) with
 the selected type stored by `PLAT_VIU_ChangeInput`; `common/source_vin.c` now

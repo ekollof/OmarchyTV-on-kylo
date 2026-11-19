@@ -34,6 +34,7 @@ superseded claims and descriptions.
 - [SCHED-CHANNELS](../../artifacts/reports/SCHED-CHANNELS-2026-11-06.md)
 - [SCHED-UI-THEME](../../artifacts/reports/SCHED-UI-THEME-2026-11-06.md)
 - [STAGED-COLD-BOOT-DESIGN](../../artifacts/reports/STAGED-COLD-BOOT-DESIGN-2026-11-09.md)
+- [STAGED-TAKEOVER-READY](../../artifacts/reports/STAGED-TAKEOVER-READY-2026-11-19.md)
 - [TAKEOVER-ACCEPT](../../artifacts/reports/TAKEOVER-ACCEPT-2026-11-07.md)
 - [TAKEOVER-FULL](../../artifacts/reports/TAKEOVER-FULL-2026-11-05.md)
 - [TAKEOVER-IR](../../artifacts/reports/TAKEOVER-IR-2026-11-05.md)

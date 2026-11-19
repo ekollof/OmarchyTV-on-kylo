@@ -11,6 +11,8 @@ establishes completion of the full replacement.
 
 ## Current implementation and firmware evidence
 
+| [STAGED-TAKEOVER-READY](STAGED-TAKEOVER-READY-2026-11-19.md) | 2026-11-19 vendor-skin parity bundle built for TV: 66 manifest hashes verified, 35 ARM modules, risky hardware gates off, `check-staged-bundle` host gate. Full preflight/takeover/restore runbook and stock-screen comparison methodology; not run on the TV, owner authorization and verified USB recovery still required. |
+
 | report | status / use |
 |---|---|
 | [STOCK-UI-LIVE-CAPTURES](STOCK-UI-LIVE-CAPTURES-2026-11-19.md) | 2026-11-19 read-only DIAL+fb1 pass with stock Aurora: populated channel screen (record 80 confirmed live), edit pane, portal rails, sources screen, EPG empty state; GotoServiceDialog sampled live (1500 ms static) with the paint firmware-exact: record 116 tag-2 = volume_bg.png at matrix(1 0 0 1 15 23), opaque #481730 core at screen 41,45..208,211 (168x167), white centred ink; empty-list guard corrected; one "Toevoegen aan Thuis" settingsDB write disclosed with before/after copies. TV restored to standby, no staging/helper. |

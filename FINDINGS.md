@@ -19,6 +19,13 @@ filter-EPG state, the edit pane and portal/source screens. One stock
 "Toevoegen aan Thuis" action wrote the settingsDB (LauncherItem 53→54 rows);
 both DB copies are archived, the visible home rail is unchanged, and no DB
 write was attempted. Report: STOCK-UI-LIVE-CAPTURES-2026-11-19.
+STAGED-BUNDLE-2026-11-19: the vendor-skin parity `full-replacement` bundle was
+built for TV (`TARGET=tv BUILD=build-tv-v3`), its 66-entry SHA256 manifest
+verified, 35 ARM modules and the risky gates confirmed off, and an offline
+`check-staged-bundle` gate added. It is staged only in the build tree — no TV
+contact; a takeover requires owner authorization and a re-verified USB
+recovery path. Report: STAGED-TAKEOVER-READY.
+
 SOURCE-NDVIDEO-2026-11-19: read-only instructions in `PLAT_VIU_ChangeInput`
 @0x00902ae4 show the real internal source-state update:
 `PLAT_VIU_NdVideoSetting` @0x00901c28 returns `&DAT_019d4bf8+path*4` (path 0..

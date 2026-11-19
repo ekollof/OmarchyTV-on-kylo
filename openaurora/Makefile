@@ -2399,6 +2399,10 @@ native-replacement-bundle:
 
 # Cold-start candidate: stock vendor UI, real platform, no takeover fallback.
 # NOT TV-accepted; build only until a cold-boot/recovery gate is authorized.
+.PHONY: check-staged-bundle
+check-staged-bundle:
+	@sh tools/boot/check-staged-bundle.sh $(abspath $(BUNDLE_DIR)) $(words $(FULL_REPLACEMENT_SO))
+
 .PHONY: cold-replacement-bundle
 cold-replacement-bundle:
 	@$(MAKE) --no-print-directory full-replacement-bundle \
