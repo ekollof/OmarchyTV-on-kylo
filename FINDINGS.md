@@ -7,9 +7,12 @@ sampler caught the live dialog at t=87..1467 ms, gone at 1527 ms — a single
 static paint matching the 1500 ms timer, not a white 540x239 panel: the real
 render is a flat 167x167 #481730 box at (41,45)..(207,211) with white digit
 ink centred at (125,127), over the unchanged channel screen. The named
-`main_rectangle` is layout metadata, not opaque paint. `common/goto_service.c`
-now carries the measured box/ink, `ui_vendor` paints only that box and guards
-on a non-empty list; the authored-to-rendered transform is still unrecovered.
+`main_rectangle` is layout metadata, not opaque paint. The transform is
+firmware-exact: record 116's tag-2 element references `../png/volume_bg.png`
+at `matrix(1 0 0 1 15 23)` (image-pack hash 0xb72d0a70, 220x210, opaque
+#481730 core at image 26,22..193,188 -> screen 41,45..208,211, 168x167).
+`common/goto_service.c` now carries that box/ink, `ui_vendor` paints only the
+box and guards on a non-empty list.
 The same pass captured the populated channel screen (record 80 confirmed
 live: #BE1E2D panel, #B21D2B banner, 75 px rows, #FE9419 focus), the empty
 filter-EPG state, the edit pane and portal/source screens. One stock

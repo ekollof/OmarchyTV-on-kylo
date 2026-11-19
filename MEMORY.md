@@ -1650,9 +1650,12 @@ moves the focus, Exit cancels. 2026-11-19 live capture **corrects** the former
 placement: `onDigitPress` skips the modal on an empty list (cbz e7cb44); the
 live 1500 ms dialog is a flat 167x167 #481730 box at (41,45)..(207,211) with
 white digit ink centred at (125,127) over the unchanged channel screen, not a
-white panel at 122,198. `common/goto_service.c` carries the measured box/ink;
-ui_vendor paints only the box and guards on a non-empty list; authored-to-
-rendered transform open. Candidate stock-goto.png regenerated. The same
+white panel at 122,198. Transform is firmware-exact: record 116 tag-2 =
+`../png/volume_bg.png` at matrix(1 0 0 1 15 23); the asset (hash 0xb72d0a70,
+220x210) has an opaque #481730 core at image 26,22..193,188 -> screen
+41,45..208,211 (168x167). `common/goto_service.c` carries that box/ink;
+ui_vendor paints only the box and guards on a non-empty list. Candidate
+stock-goto.png regenerated. The same
 read-only DIAL+fb1 pass captured the populated channel screen, EPG empty
 state, sources screen, edit pane and portal rails; one "Toevoegen aan Thuis"
 action wrote settingsDB (LauncherItem 53→54 rows, no visible rail change, both

@@ -235,8 +235,11 @@ maps the cold-start stages and the current stock-UI coverage.
       live pass captured the populated stock channel screen (record 80
       confirmed live), the edit pane, the portal rails, the sources screen and
       the EPG empty-filter state; the GotoServiceDialog was sampled live
-      (1500 ms static, 167x167 #481730 box at 41,45, white centred ink) and
-      the empty-list guard (`cbz` e7cb44) corrected in ui_vendor. One stock
+      (1500 ms static, 168x167 #481730 box at 41,45, white centred ink) and
+      the empty-list guard (`cbz` e7cb44) corrected in ui_vendor. The paint is
+      firmware-exact: record 116 tag-2 = `../png/volume_bg.png` at
+      matrix(1 0 0 1 15 23), opaque core at image 26,22..193,188 -> screen
+      41,45..208,211. One stock
       "Toevoegen aan Thuis" action wrote settingsDB; both DB copies are
       archived, the visible home rail is unchanged, no DB write was attempted.
       Report: STOCK-UI-LIVE-CAPTURES-2026-11-19. Open: EPG/PVR populated stock

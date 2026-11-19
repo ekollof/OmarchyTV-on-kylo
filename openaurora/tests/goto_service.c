@@ -17,7 +17,7 @@ int main(void)
     assert(l.animation.x == 0 && l.animation.y == 308 &&
            l.animation.x1 == 100 && l.animation.y1 == 408);
     assert(l.entry_box.x == 41 && l.entry_box.y == 45 &&
-           l.entry_box.x1 == 208 && l.entry_box.y1 == 212);
+           l.entry_box.x1 == 209 && l.entry_box.y1 == 212);
     assert(l.font_id == 15 && l.entry_mode == 11 && l.timeout_ms == 1500 &&
            l.timeout_shortcut_ms == 3000);
     assert(l.panel_rgb[0] == 255 && l.number_rgb[0] == 35);

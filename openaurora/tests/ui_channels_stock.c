@@ -435,7 +435,7 @@ int main(int argc, char **argv)
     oa_host_dispatch_posts(&host);
     /* Live stock render: a 167x167 #481730 entry box at 41,45 (no white
      * panel; the channel list stays visible behind the dialog). */
-    assert(find_fill(trace, 41, 45, 167, 167, 72, 23, 48));
+    assert(find_fill(trace, 41, 45, 168, 167, 72, 23, 48));
     const char *gcap = getenv("OA_CHANNELS_GOTO_CAPTURE");
     if (gcap && *gcap)
         assert(!trace->capture(gcap));

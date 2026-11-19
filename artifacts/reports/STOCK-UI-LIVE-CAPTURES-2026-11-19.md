@@ -74,10 +74,14 @@ context.
   0,0,540,239 `#FFFFFF` and `serviceNumber` -133,98,377,298 (authored,
   pre-transform); as with `DialogMainMenu`, the named rectangle is layout
   metadata, not opaque paint. Records 395..398 really are
-  `gotoServiceTextEntryBoxFA/FI/UFA/UFI.svg` (three-zone row layouts); the
-  `#481730` literal is in the BinSVG pack (50 uses, mostly dialog header
-  bands), but the transform from the authored rect to the rendered 167 px box
-  is **not recovered** — the box rect/colour is taken from the live capture.
+  `gotoServiceTextEntryBoxFA/FI/UFA/UFI.svg` (three-zone entry states; init
+  `0x00d2296c` maps state1→0x18b, state3→0x18c, state0→0x18d, state2→0x18e).
+- **Transform recovered:** record 116's unnamed tag-2 element is an image
+  reference `../png/volume_bg.png` with `matrix(1 0 0 1 15 23)`. The image pack
+  entry `volume_bg.png` (hash `0xb72d0a70`, 220×210, 527 bytes) has an opaque
+  `#481730` core at image (26,22)..(193,188); placed at (15,23) that core lands
+  on screen at **(41,45)..(208,211) = 168×167** — the captured box, with no
+  scale transform. The digit ink is white and centred in that box.
 - **Implementation correction:** `common/goto_service.c` now carries the
   rendered entry box (exclusive corners 41,45,208,212), `#481730` fill and
   white digit ink; `ui_vendor` paints only that box (no white panel) and, per

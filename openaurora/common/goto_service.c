@@ -12,7 +12,7 @@ int oa_goto_layout_default(oa_goto_layout *out)
     out->panel = (oa_goto_rect){ 0, 0, 540, 239 };
     out->number_box = (oa_goto_rect){ -133, 98, 377, 298 };
     out->animation = (oa_goto_rect){ 0, 308, 100, 408 };
-    out->entry_box = (oa_goto_rect){ 41, 45, 208, 212 };
+    out->entry_box = (oa_goto_rect){ 41, 45, 209, 212 };
     out->font_id = 15;
     out->entry_mode = 11;
     out->timeout_ms = 1500;

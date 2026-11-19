@@ -415,9 +415,11 @@ Evidence: [APP-MANAGER-KEYBOARD](../../artifacts/reports/APP-MANAGER-KEYBOARD-20
   `ui.goto_digit_base` (Select id 53 collides with ASCII '5'); the empty-list
   guard and the live render were confirmed on TV 2026-11-19: a 167x167 #481730
   box at 41,45 with white centred ink, not a white 540x239 panel (the named
-  rectangle is layout metadata). `common/goto_service.c` +
-  `check-goto-service`, candidate `stock-goto.png`; the authored-to-rendered
-  transform and multi-digit entry remain open. The edit tab opens the record-100
+  rectangle is layout metadata). Firmware-exact: record 116 tag-2 =
+  `../png/volume_bg.png` at matrix(1 0 0 1 15 23); opaque core image
+  26,22..193,188 -> screen 41,45..208,211 (168x167). `common/goto_service.c` +
+  `check-goto-service`, candidate `stock-goto.png`; multi-digit entry remains
+  open. The edit tab opens the record-100
   ChannelEditOptions pane (ADD_TO_HOME/MOVE/DELETE|REMOVE/EDIT_NAME/LOCK/
   FAVOURITE/TAG/TAG_ALL with the recovered conditions) behind
   `ui.channels_edit=1` (`common/channel_edit.c` + `check-channel-edit`, Dutch

@@ -32,15 +32,18 @@ extern "C" {
  * onDigitPress first calls totalNumberOfItems() @0x00e7cb40 and skips the
  * modal when the list is empty (cbz @0x00e7cb44).
  *
- * This model implements the numeric entry, lookup and result semantics. A
- * read-only on-TV fb1 sample (2026-11-19) pinned the live render: the dialog
- * is static for ~1500 ms and paints only a flat #481730 167x167 entry box at
- * (41,45)..(207,211) with white centred digit ink, over the still-visible
- * channel screen — the named main_rectangle is layout metadata, not paint.
- * The authored serviceNumber rect is pre-transform; the transform to the
- * rendered box is still unrecovered. The max digit count is not reduced from
- * the create arguments (12/13), so callers pass an explicit bound (the screen
- * uses ui.goto_max_digits, default 4).
+ * This model implements the numeric entry, lookup and result semantics. The
+ * live render is now firmware-exact: DialogGoToService.svg's unnamed tag-2
+ * element references `../png/volume_bg.png` with `matrix(1 0 0 1 15 23)`.
+ * That asset (image-pack index hash 0xb72d0a70, 220x210, 527 bytes) has an
+ * opaque #481730 core at image (26,22)..(193,188), so it lands on screen at
+ * (41,45)..(208,211) = 168x167 — exactly the read-only on-TV fb1 capture
+ * (2026-11-19), which also confirmed a static ~1500 ms paint with white digit
+ * ink centred at ~(125,127). There is no scale transform; the named
+ * main_rectangle is layout metadata and serviceNumber is the entry text box.
+ * The max digit count is not reduced from the create arguments (12/13), so
+ * callers pass an explicit bound (the screen uses ui.goto_max_digits,
+ * default 4).
  */
 typedef struct {
     int x, y, x1, y1;
@@ -50,11 +53,10 @@ typedef struct {
     oa_goto_rect panel;       /* 0,0,540,239 authored (layout, not paint) */
     oa_goto_rect number_box;  /* -133,98,377,298 authored (pre-transform) */
     oa_goto_rect animation;   /* 0,308,100,408 */
-    /* Live stock render, read-only fb1 sampler 2026-11-19: the dialog paints
-     * a flat 167x167 #481730 entry box at 41,45..207,211 with the white digit
-     * ink centred at 125,127. The named main_rectangle/serviceNumber records
-     * are layout metadata, not opaque paint (as for DialogMainMenu). */
-    oa_goto_rect entry_box;   /* 41,45,207,211 rendered */
+    /* Firmware paint: volume_bg.png (220x210) placed at 15,23; its opaque
+     * #481730 core (image 26,22..193,188) spans screen 41,45..208,211.
+     * The live 2026-11-19 capture matches (168x167 core, edges antialiased). */
+    oa_goto_rect entry_box;   /* 41,45,209,212 exclusive corners */
     int font_id;              /* 15 */
     int entry_mode;           /* 11 */
     int timeout_ms;           /* 1500 */

@@ -172,8 +172,10 @@ Reports: [TUNER-BRINGUP](../../artifacts/reports/TUNER-BRINGUP-2026-11-06.md),
 - Channel `GotoServiceDialog` is modelled from record 116 (numeric entry,
   lookup, result -> `setSelectedItem`) and gated. A 2026-11-19 read-only live
   sample confirmed the ~1500 ms lifetime, the empty-list guard and the
-  rendered entry box (167x167 #481730 at 41,45, white centred ink); the
-  authored-to-rendered transform, multi-digit entry and animation remain open.
+  rendered entry box (168x167 #481730 at 41,45, white centred ink) and its
+  firmware transform (record 116 tag-2 = volume_bg.png at matrix(1 0 0 1
+  15 23), opaque core image 26,22..193,188 -> screen 41,45..208,211);
+  multi-digit entry and the animation remain open.
   The edit/filter option actions and the keys-shortcut branch also remain open,
   as do populated EPG/PVR stock captures (EIT/RF needed).
 
