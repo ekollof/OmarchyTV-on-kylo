@@ -23,6 +23,7 @@
 #include "openaurora/events.h"
 #include "openaurora/menu_model.h"
 #include "openaurora/module.h"
+#include "openaurora/pvr_ts_source.h"
 #include "openaurora/ui_engine.h"
 #include "openaurora/ui_omarchy.h"
 #include "host.h"
@@ -362,6 +363,7 @@ int oa_control_command(oa_host *h, char *line, char *outbuf, size_t outlen)
                  "  channel-state           runtime/stored list source and counts\n"
                  "  channel-list            runtime active-list rows\n"
                  "  pvr-list                PVR reservations\n"
+                 "  pvr-ts-state            bounded DVR TS source state\n"
                  "  pvr-add <svc> <from> <to> [repeat start_pad end_pad]\n"
                  "                           add reservation\n"
                  "  pvr-cancel <id>         cancel scheduled reservation\n"
@@ -1413,6 +1415,14 @@ int oa_control_command(oa_host *h, char *line, char *outbuf, size_t outlen)
                 jobs[i].id,jobs[i].service_handle,jobs[i].state,
                 jobs[i].start_ms,jobs[i].end_ms,jobs[i].repeat_days,
                 jobs[i].start_padding,jobs[i].end_padding,jobs[i].name);
+        return 0;
+    }
+    if(!strcmp(cmd,"pvr-ts-state")) {
+        if(force || a1 || a2 || a3 || a4){snprintf(outbuf,outlen,"failed errno %d\n",EINVAL);return -1;}
+        int active=0,error=0;size_t packets=0,bytes=0;
+        oa_pvr_ts_info(&active,&packets,&bytes,&error);
+        snprintf(outbuf,outlen,"pvr ts active %d packets %zu bytes %zu error %d\n",
+                 active,packets,bytes,error);
         return 0;
     }
     if(!strcmp(cmd,"pvr-add")) {

@@ -19,6 +19,15 @@ filter-EPG state, the edit pane and portal/source screens. One stock
 "Toevoegen aan Thuis" action wrote the settingsDB (LauncherItem 53→54 rows);
 both DB copies are archived, the visible home rail is unchanged, and no DB
 write was attempted. Report: STOCK-UI-LIVE-CAPTURES-2026-11-19.
+PVR-TS-SOURCE-2026-11-19: a bounded 188-byte MPEG-TS source now feeds the
+existing mockable DVR sink recovered from `Hal_Demux_Dvb_Dvr_*`
+(EIT-DVB-DVR-2026-11-05): `begin` → `pump` (max 64 packets, whole packets only)
+→ `end` (flush then close), with errors recorded and close still performed
+after a write failure. mod_pvr wires it behind default-off `pvr.dvr_ts` +
+`pvr.ts_path` and exposes `pvr-ts-state`. `check-pvr-ts-source` asserts the
+exact fake-op order and bounds; IPC/quiesce pass with the gate off. No DVB
+device or recording acceptance.
+
 STAGED-BUNDLE-2026-11-19: the vendor-skin parity `full-replacement` bundle was
 built for TV (`TARGET=tv BUILD=build-tv-v3`), its 66-entry SHA256 manifest
 verified, 35 ARM modules and the risky gates confirmed off, and an offline

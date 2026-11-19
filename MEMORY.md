@@ -1,5 +1,13 @@
 # Current project state — last verified 2026-11-07
 
+2026-11-19 PVR TS source: a bounded 188-byte TS source feeds the recovered
+mockable DVR sink (begin/open, pump max 64 whole packets, end flush+close);
+mod_pvr uses it only with `pvr.dvr_ts=<adapter>:<index>` + `pvr.ts_path`,
+exposes `pvr-ts-state`, and flush/closes on record-finish/stop/quiesce.
+`check-pvr-ts-source` asserts the op order/bounds/EOF/errors; PVR IPC and
+quiesce pass with the default-off gate. No DVB device or recording acceptance.
+PVR-TS-SOURCE-2026-11-19.
+
 2026-11-19 staged bundle: `build-tv-v3/full-replacement` (vendor-skin parity
 stack, 35 ARM modules, core `f481e8fa…`) built and its 66-entry hash manifest
 verified; `make TARGET=tv BUILD=build-tv-v3 check-staged-bundle` also checks

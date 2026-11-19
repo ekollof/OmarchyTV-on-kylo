@@ -85,6 +85,9 @@ async function main() {
         assert.equal(await run.command('load pvr'), 'ok pvr');
         assert.equal(await run.command('start pvr'), 'ok');
         assert.equal(await run.command('pvr-list'), 'count 0');
+        /* The live DVR TS source is default-off: no sink session is opened. */
+        assert.equal(await run.command('pvr-ts-state'),
+            'pvr ts active 0 packets 0 bytes 0 error 0');
 
         assert.equal(await run.command('pvr-add 1 1000 2000'), 'id 1');
         assert.equal(await run.command('pvr-add 1 1500 2500'), 'failed errno 16');

@@ -327,6 +327,7 @@ superseded claims and descriptions.
 - [PVR-MODULE](../../artifacts/reports/PVR-MODULE-2026-11-05.md)
 - [PVR-QUIESCE](../../artifacts/reports/PVR-QUIESCE-2026-11-06.md)
 - [PVR-STOCK-LAYOUT](../../artifacts/reports/PVR-STOCK-LAYOUT-2026-11-17.md)
+- [PVR-TS-SOURCE](../../artifacts/reports/PVR-TS-SOURCE-2026-11-19.md)
 
 ## Power and standby
 - [POWER-STANDBY-CONTRACT](../../artifacts/reports/POWER-STANDBY-CONTRACT-2026-10-31.md)

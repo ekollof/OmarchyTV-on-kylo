@@ -776,7 +776,11 @@ unvalidated.
       `OA_KEY_REPEAT` emitter is still unimplemented. No OK press was
       captured. HW-ACCEPT.
 - [ ] PVR: frontend/demux/dvr open, record/playback and TS output; record what
-      is gated by storage. 2026-11-07: only the offline persistent stub ran;
+      is gated by storage. 2026-11-19: a bounded TS source now feeds the
+      recovered mockable DVR sink behind default-off `pvr.dvr_ts` +
+      `pvr.ts_path` (`check-pvr-ts-source` asserts open/write/flush/close,
+      188-byte framing and errors); no DVB fd, real TS stream or recording
+      acceptance yet. 2026-11-07: only the offline persistent stub ran;
       `pvr-add`/`pvr-list`/`pvr-cancel` worked (cancel state3, record retained).
       No frontend/demux/dvr fd, recording, playback or TS output.
 

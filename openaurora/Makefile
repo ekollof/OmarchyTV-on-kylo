@@ -132,7 +132,7 @@ endef
 .SECONDARY:
 
 CORE_SRC := $(wildcard core/*.c)
-CORE_OBJ := $(CORE_SRC:core/%.c=$(BUILD)/core/%.o) $(BUILD)/common/audio_speaker.o $(BUILD)/common/cec.o
+CORE_OBJ := $(CORE_SRC:core/%.c=$(BUILD)/core/%.o) $(BUILD)/common/audio_speaker.o $(BUILD)/common/cec.o $(BUILD)/common/pvr_ts_source.o $(BUILD)/common/dvr_sink.o
 CORE_DEP := $(CORE_OBJ:.o=.d)
 
 MOD_SO   := $(foreach m,$(MODULES),$(BUILD)/modules/mod_$(m).so)
@@ -534,6 +534,15 @@ check: check-nim-stub
 $(BUILD)/tests/pvr_stub: tests/pvr_stub.c common/pvr_stub.c common/dvr_sink.c include/openaurora/pvr.h include/openaurora/dvr.h include/openaurora/broadcast.h
 	@mkdir -p $(dir $@)
 	$(CC) $(CPPFLAGS) $(CFLAGS) $(LDFLAGS) -o $@ $(filter %.c,$^) $(LDLIBS)
+$(BUILD)/tests/pvr_ts_source: tests/pvr_ts_source.c common/pvr_ts_source.c common/dvr_sink.c include/openaurora/pvr_ts_source.h include/openaurora/dvr.h
+	@mkdir -p $(dir $@)
+	$(CC) $(CPPFLAGS) $(CFLAGS) $(LDFLAGS) -o $@ $(filter %.c,$^) $(LDLIBS)
+
+.PHONY: check-pvr-ts-source
+check-pvr-ts-source: $(BUILD)/tests/pvr_ts_source
+	@$(BUILD)/tests/pvr_ts_source
+check: check-pvr-ts-source
+
 .PHONY: check-pvr-stub
 check-pvr-stub: $(BUILD)/tests/pvr_stub
 	@$(BUILD)/tests/pvr_stub
@@ -927,6 +936,14 @@ $(BUILD)/common/cec.o: common/cec.c include/openaurora/cec.h
 	@mkdir -p $(dir $@)
 	$(CC) $(CPPFLAGS) $(CFLAGS) -MMD -MP -c -o $@ $<
 
+$(BUILD)/common/pvr_ts_source.o: common/pvr_ts_source.c include/openaurora/pvr_ts_source.h include/openaurora/dvr.h
+	@mkdir -p $(dir $@)
+	$(CC) $(CPPFLAGS) $(CFLAGS) -MMD -MP -c -o $@ $<
+
+$(BUILD)/common/dvr_sink.o: common/dvr_sink.c include/openaurora/dvr.h
+	@mkdir -p $(dir $@)
+	$(CC) $(CPPFLAGS) $(CFLAGS) -MMD -MP -c -o $@ $<
+
 $(BUILD)/core/%.o: core/%.c
 	@mkdir -p $(dir $@)
 	$(CC) $(CPPFLAGS) $(CFLAGS) -MMD -MP -c -o $@ $<
@@ -1036,10 +1053,10 @@ $(BUILD)/modules/mod_tuner.so: $(call pic_objs,modules__mod_tuner,modules/tuner/
 	$(CC) -shared -o $@ $^ -pthread $(LDFLAGS) $(if $(filter tv,$(TARGET)),$(VENDOR_LDFLAGS)) -ldl
 $(eval $(call emit_pics,modules__mod_tuner,modules/tuner/tuner.c common/nim_stub.c common/nim_ts.c common/nim_ndal.c common/eit_dvb.c common/eit_ts.c common/eit_section.c common/eit_time.c common/efsl_profile.c common/tuner_identity.c common/mxl661.c common/mxl661_dev.c common/mxl661_rf.c common/mxl661_atv.c common/mxl661_tune.c common/tuner_hal.c common/tuner_sequence.c common/tuner_vendor.c common/nim_dtv.c common/nim_dtv_hal.c common/nim_dtv_hw.c common/nim_tune.c common/nim_hal.c common/lnb_rt5047.c,-pthread,include/openaurora/nim.h include/openaurora/eit_dvb.h include/openaurora/eit_section.h include/openaurora/eit_ts.h include/openaurora/eit_time.h include/openaurora/broadcast.h include/openaurora/module.h include/openaurora/services.h include/openaurora/efsl_profile.h include/openaurora/tuner_identity.h include/openaurora/mxl661.h include/openaurora/mxl661_dev.h include/openaurora/mxl661_rf.h include/openaurora/mxl661_atv.h include/openaurora/mxl661_tune.h include/openaurora/tuner_hal.h include/openaurora/tuner_sequence.h include/openaurora/tuner_vendor.h include/openaurora/nim_dtv.h include/openaurora/nim_dtv_hal.h include/openaurora/nim_dtv_hw.h include/openaurora/nim_tune.h include/openaurora/nim_hal.h include/openaurora/lnb_rt5047.h include/openaurora/hal_iic.h))
 
-$(BUILD)/modules/mod_pvr.so: $(call pic_objs,modules__mod_pvr,modules/pvr/pvr.c common/pvr_stub.c)
+$(BUILD)/modules/mod_pvr.so: $(call pic_objs,modules__mod_pvr,modules/pvr/pvr.c common/pvr_stub.c common/pvr_ts_source.c common/dvr_sink.c)
 	@mkdir -p $(dir $@)
-	$(CC) -shared -o $@ $^ -pthread $(LDFLAGS)
-$(eval $(call emit_pics,modules__mod_pvr,modules/pvr/pvr.c common/pvr_stub.c,-pthread,include/openaurora/pvr.h include/openaurora/broadcast.h include/openaurora/module.h include/openaurora/services.h))
+	$(CC) -shared -o $@ $^ -pthread $(LDFLAGS) -ldl
+$(eval $(call emit_pics,modules__mod_pvr,modules/pvr/pvr.c common/pvr_stub.c common/pvr_ts_source.c common/dvr_sink.c,-pthread,include/openaurora/pvr.h include/openaurora/broadcast.h include/openaurora/module.h include/openaurora/services.h include/openaurora/dvr.h include/openaurora/pvr_ts_source.h))
 
 $(BUILD)/modules/mod_channels.so: $(call pic_objs,modules__mod_channels,modules/channels/channels.c common/channels.c)
 	@mkdir -p $(dir $@)

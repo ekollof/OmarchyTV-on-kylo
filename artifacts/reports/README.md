@@ -11,6 +11,8 @@ establishes completion of the full replacement.
 
 ## Current implementation and firmware evidence
 
+| [PVR-TS-SOURCE](PVR-TS-SOURCE-2026-11-19.md) | 2026-11-19 bounded 188-byte TS source feeding the recovered mockable DVR sink (Hal_Demux_Dvb_Dvr open/write/flush/close), default-off `pvr.dvr_ts` gate in mod_pvr, `pvr-ts-state` probe; `check-pvr-ts-source` asserts open/write/flush/close order, bounds, EOF and error paths. Host/mock only; no DVB device or recording acceptance. |
+
 | [STAGED-TAKEOVER-READY](STAGED-TAKEOVER-READY-2026-11-19.md) | 2026-11-19 vendor-skin parity bundle built for TV: 66 manifest hashes verified, 35 ARM modules, risky hardware gates off, `check-staged-bundle` host gate. Full preflight/takeover/restore runbook and stock-screen comparison methodology; not run on the TV, owner authorization and verified USB recovery still required. |
 
 | report | status / use |
