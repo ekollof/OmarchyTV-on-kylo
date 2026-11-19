@@ -57,7 +57,28 @@ int main(void)
     io.read = NULL;
     assert(oa_source_vin_poll(&io, 105, words) == -EINVAL);
 
+    /* PLAT_VIU_NdVideoSetting @0x00901c28: path 0..6 -> slot, path > 6 ->
+     * slot 0; ChangeInput @0x00902d60 stores the selected source type there.
+     * The following GetVinParam/TDLayer copy is skipped on this firmware
+     * (all table pointers zero), so no 13-word state is emulated. */
+    struct oa_source_vin_paths paths;
+    memset(&paths, 0xa5, sizeof paths);
+    oa_source_vin_paths_init(&paths);
+    for (int i = 0; i < (int)OA_SOURCE_VIN_PATHS; i++)
+        assert(oa_source_vin_path_get(&paths, i) == 0);
+    assert(oa_source_vin_path_set(&paths, 0, 17) == 0);
+    assert(oa_source_vin_path_set(&paths, 6, 19) == 0);
+    assert(oa_source_vin_path_get(&paths, 0) == 17 &&
+           oa_source_vin_path_get(&paths, 6) == 19);
+    assert(oa_source_vin_path_get(&paths, 1) == 0);   /* slots independent */
+    assert(oa_source_vin_path_set(&paths, 7, 5) == 0);
+    assert(oa_source_vin_path_get(&paths, 0) == 5);   /* clamp to slot 0 */
+    assert(oa_source_vin_path_get(&paths, -1) == 5);
+    assert(oa_source_vin_path_set(&paths, 0, -1) == -EINVAL);
+    assert(oa_source_vin_path_get(NULL, 0) == -EINVAL);
+    assert(oa_source_vin_path_set(NULL, 0, 1) == -EINVAL);
+
     puts("ok source-vin: w0=1 ready, w0=0/5 lost, live sleep samples, "
-         "poll seam, null/fd rejection");
+         "poll seam, null/fd rejection, 7-slot NdVideo path table");
     return 0;
 }

@@ -157,6 +157,12 @@ maps the cold-start stages and the current stock-UI coverage.
       needs `plat.drm_init=1` (takeover leaves the DRM device id -1). The HDMI
       picture, audio and cold boot remain unconfirmed. The module fails fast
       before any VIN/VPLT call when the DRM id is -1; keep `source.enable=0`.
+      2026-11-19: the one real internal table update was recovered from
+      instructions and modeled — the 7-slot NdVideo path->type store
+      (`common/source_vin.c`, `check-source-vin`, set on connect in mod_source);
+      the once-listed 13-word TDLayer copy is dead code on this set
+      (GetVinParam pointer table all zero) and is not a porting requirement.
+      Full VIN/HDMI picture and cold-boot acceptance remain open.
 - [x] Audio source service behind a gate: `mod_audio_source` implements the
       recovered `ICE_AudioStart` external branch with the 56-entry source
       table, `Hal_Audio_Ctrl(0x2a)`, the five `plat_adec_connect(0,2)`

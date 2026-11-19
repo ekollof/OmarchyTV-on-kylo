@@ -89,6 +89,7 @@ struct ctx {
     int nfds;
     uint32_t v4l2_info[4];
     uint32_t fdcommon[9];
+    struct oa_source_vin_paths vin_paths;  /* PLAT_VIU_NdVideoSetting table */
     /* ABI 3 quiesce: fds are detached and closed on a worker. */
     pthread_t cleanup_thread;
     int cleanup_running;
@@ -270,6 +271,11 @@ static int vin_slot_connect(struct ctx *c, int type)
     }
     c->slot_connected = 1;
     c->slot_type = type;
+    /* Vendor PLAT_VIU_ChangeInput stores the selected type in the NdVideo
+     * setting slot for this path (str r5,[r0] @0x00902d60). Our single
+     * controlled VIN slot is path 0; the later 13-word TDLayer copy is skipped
+     * on this firmware (GetVinParam table pointers are all zero). */
+    oa_source_vin_path_set(&c->vin_paths, 0, type);
     if (type >= 4)
         c->audio_refs++;
     return 0;
@@ -1052,6 +1058,7 @@ static int m_start(void *v)
     c->cleanup_running = 0;
     c->current = -1;
     c->slot_connected = 0;
+    oa_source_vin_paths_init(&c->vin_paths);
     c->nfds = 0;
     c->close_n = 0;
     const char *en = c->api->config_get(c->api->priv, "source.enable", "0");

@@ -19,6 +19,20 @@ filter-EPG state, the edit pane and portal/source screens. One stock
 "Toevoegen aan Thuis" action wrote the settingsDB (LauncherItem 53→54 rows);
 both DB copies are archived, the visible home rail is unchanged, and no DB
 write was attempted. Report: STOCK-UI-LIVE-CAPTURES-2026-11-19.
+SOURCE-NDVIDEO-2026-11-19: read-only instructions in `PLAT_VIU_ChangeInput`
+@0x00902ae4 show the real internal source-state update:
+`PLAT_VIU_NdVideoSetting` @0x00901c28 returns `&DAT_019d4bf8+path*4` (path 0..
+6, >6 -> index 0) and ChangeInput stores the selected type there
+(`str r5,[r0,#0]` @0x00902d60). Modeled as `oa_source_vin_paths` in
+`common/source_vin.c`, set on connect in mod_source, asserted by
+check-source-vin. The decompiler's "void stub" for
+`PLAT_SRCIN_GetVinParam` @0x008fd9fc is wrong: instructions read table
+0x017706d4[type*8+4]; all 25 pointer words are zero on this firmware, so the
+caller's NULL check skips `PLAT_VIN_UpdateTDLayerInputSource` @0x008f2514 — its
+13-word copy to gstSourceControl[path]+0xcc is dead code on this set, not a
+replacement requirement. The decompiler must be cross-checked against
+instructions before declaring a function a no-op. Report: SOURCE-PATH.
+
 CHANNEL-FILTER-LIVE-2026-11-19: the stock filter popup was captured read-only.
 Record 636's panel (60,117,666,467 #494949, #DCDCDC border, 70 px/5 rows) is
 authored layout metadata; the shared SettingItemsListBox paints (142,160)..

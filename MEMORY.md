@@ -1,5 +1,14 @@
 # Current project state — last verified 2026-11-07
 
+2026-11-19 source table: firmware instructions show the real per-path source
+state is `PLAT_VIU_NdVideoSetting`'s 7-slot table (path >6 clamps to 0) with
+the selected type stored by `PLAT_VIU_ChangeInput`; `common/source_vin.c` now
+models it (`oa_source_vin_paths`), `mod_source` sets path 0 on connect, and
+`check-source-vin` passes. `PLAT_SRCIN_GetVinParam` is NOT a void stub — its
+25-entry pointer table is all zero on this firmware, so the 13-word TDLayer
+input-source copy is never called (dead code on this set). No TV contact.
+SOURCE-PATH correction.
+
 2026-11-19 filter popup + ladder: a second read-only DIAL+fb1 window captured
 the stock channel filter popup — record 636 rects (60,117,666,467 #494949,
 70 px/5 rows) are authored layout metadata; the shared list box paints

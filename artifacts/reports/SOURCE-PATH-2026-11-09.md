@@ -76,6 +76,31 @@ The ARM `mod_source.so` builds and links
 `Hal_Audio_EasySelect`, all `Hal_Video_*` wrappers, `Hal_Vin_*` and
 `NDAL_VideoExt_OpenDevice`; the cold bundle rebuilds with a verified manifest.
 
+## 2026-11-19 correction: internal table updates
+
+Read-only Ghidra (`-readOnly -noanalysis`, Aurora MD5
+`64c252340d3af6c5d66072611b7bad7a`, `DumpFirmware --asm`) recovered the
+caller contract in `PLAT_VIU_ChangeInput` @0x00902ae4:
+
+- `PLAT_VIU_NdVideoSetting(type)` @0x00901c28 returns
+  `&DAT_019d4bf8 + path*4` for path 0..6 and index 0 for path > 6 (instructions
+  `cmp r0,#6` / `add.w r0,r0,r5,lsl #2`); `ChangeInput` then stores the selected
+  source type into that word (`str r5,[r0,#0]` @0x00902d60). This is a real
+  per-path state update. `common/source_vin.c` now models the seven slots
+  (`oa_source_vin_paths`), `mod_source` sets path 0 on a successful connect and
+  clears it on start, and `check-source-vin` asserts the clamp/slot semantics.
+- `PLAT_SRCIN_GetVinParam(type)` @0x008fd9fc was mislabelled a void stub by the
+  decompiler: the instructions read table `0x017706d4[type*8+4]` (type > 0x18 →
+  0) and add 8 to a nonzero pointer. The on-TV firmware's 25 pointer words are
+  **all zero**, so the getter returns NULL and `ChangeInput`'s NULL check
+  skips `PLAT_VIN_UpdateTDLayerInputSource` @0x008f2514. The 13-word copy to
+  `gstSourceControl[path]+0xcc` (stride 0x114) is therefore **dead code on this
+  set** — do not port it as a replacement requirement. `PLAT_VIN_
+  UpdateTDLayerSourceStatus` @0x008f2580 still reads DEC status, which is not
+  ported; it is a separate path.
+
+Status of this section: firmware + host-only; no TV state was changed.
+
 ## Deliberate limits / not recovered
 
 - The disconnect path above is implemented at the HAL-call level; the

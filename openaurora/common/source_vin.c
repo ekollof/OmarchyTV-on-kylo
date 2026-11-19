@@ -5,6 +5,33 @@
 
 #include "openaurora/source_vin.h"
 
+void oa_source_vin_paths_init(struct oa_source_vin_paths *p)
+{
+    if (p)
+        memset(p, 0, sizeof *p);
+}
+
+int oa_source_vin_path_set(struct oa_source_vin_paths *p, int path, int type)
+{
+    if (!p || type < 0)
+        return -EINVAL;
+    /* NdVideoSetting @0x00901c28: path > 6 (and the debug fallback) uses
+     * index 0. Negative paths are not a wire case; clamp them the same way. */
+    if (path < 0 || path >= (int)OA_SOURCE_VIN_PATHS)
+        path = 0;
+    p->type[path] = (uint32_t)type;
+    return 0;
+}
+
+int oa_source_vin_path_get(const struct oa_source_vin_paths *p, int path)
+{
+    if (!p)
+        return -EINVAL;
+    if (path < 0 || path >= (int)OA_SOURCE_VIN_PATHS)
+        path = 0;
+    return (int)p->type[path];
+}
+
 int oa_source_vin_ready(const uint32_t words[OA_SOURCE_VIN_WORDS])
 {
     if (!words) return -EINVAL;
