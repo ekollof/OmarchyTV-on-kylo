@@ -1,3 +1,22 @@
+STOCK-UI-LIVE-CAPTURES-2026-11-19 (on-TV, read-only fb1 + DIAL keys) corrects
+the CHANNEL-GOTO-2026-11-18 placement claim. `onDigitPress` @0x00e7cb18 first
+calls `ChannelNameListBox::totalNumberOfItems()` @0x00e7cb40 and `cbz`
+@0x00e7cb44 skips the modal when the list is empty (observed live: digits then
+fall through to the global tune banner). With a populated list, a read-only
+sampler caught the live dialog at t=87..1467 ms, gone at 1527 ms — a single
+static paint matching the 1500 ms timer, not a white 540x239 panel: the real
+render is a flat 167x167 #481730 box at (41,45)..(207,211) with white digit
+ink centred at (125,127), over the unchanged channel screen. The named
+`main_rectangle` is layout metadata, not opaque paint. `common/goto_service.c`
+now carries the measured box/ink, `ui_vendor` paints only that box and guards
+on a non-empty list; the authored-to-rendered transform is still unrecovered.
+The same pass captured the populated channel screen (record 80 confirmed
+live: #BE1E2D panel, #B21D2B banner, 75 px rows, #FE9419 focus), the empty
+filter-EPG state, the edit pane and portal/source screens. One stock
+"Toevoegen aan Thuis" action wrote the settingsDB (LauncherItem 53→54 rows);
+both DB copies are archived, the visible home rail is unchanged, and no DB
+write was attempted. Report: STOCK-UI-LIVE-CAPTURES-2026-11-19.
+
 COLD-START-SEQUENCE-2026-11-10 corrects the HAL cold-start contract:
 `PLAT_DRV_INI_Init` passes an explicit 0 to `Hal_Audio_Protect_Init`, ignores
 all three audio-prelude returns, and only logs GPIO/IIC/VIN failures;
@@ -429,7 +448,10 @@ overlay on `ui.goto_digit_base` digits (0=off; our Select id 53 collides with
 ASCII '5'), Select resolves against runtime RSN else lcn/channel_no and moves
 the focus, Exit cancels. The authored number x and entry ink are unpinned, so
 the screen centres the digits at 122,198 in #231F20; the timer, animation and
-dialog position remain open. Candidate stock-goto.png.
+dialog position remain open. Candidate stock-goto.png. **Superseded** by
+STOCK-UI-LIVE-CAPTURES-2026-11-19 for the rendered position/ink: the live
+1500 ms dialog is a 167x167 #481730 box at (41,45) with white centred ink, and
+the modal is guarded by a non-empty list.
 
 CHANNEL-EDIT-2026-11-18: `ChannelEditOptionsDialog` (internal
 `ChannelEditOptions`) uses `DialogEditOptionsList.svg` (BinSVG 100): panel

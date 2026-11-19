@@ -410,11 +410,14 @@ Evidence: [APP-MANAGER-KEYBOARD](../../artifacts/reports/APP-MANAGER-KEYBOARD-20
   CHANNEL_TYPE/TV-RADIO/FREE-PAY/A-Z/SORT items) behind `ui.channels_filter=1`,
   with `common/channel_filter.c` + `check-channel-filter` and the Dutch
   `stock-filter.png`; applying it is open. A digit opens the record-116
-  GotoServiceDialog (540x239 panel, entry mode 11/font 15, 1500 ms timeout,
-  numeric lookup, result selects the list item) behind `ui.channels_goto=1`
-  with an explicit `ui.goto_digit_base` (Select id 53 collides with ASCII '5');
-  `common/goto_service.c` + `check-goto-service`, candidate `stock-goto.png`;
-  timer/animation/position open. The edit tab opens the record-100
+  GotoServiceDialog (entry mode 11/font 15, 1500 ms timeout, numeric lookup,
+  result selects the list item) behind `ui.channels_goto=1` with an explicit
+  `ui.goto_digit_base` (Select id 53 collides with ASCII '5'); the empty-list
+  guard and the live render were confirmed on TV 2026-11-19: a 167x167 #481730
+  box at 41,45 with white centred ink, not a white 540x239 panel (the named
+  rectangle is layout metadata). `common/goto_service.c` +
+  `check-goto-service`, candidate `stock-goto.png`; the authored-to-rendered
+  transform and multi-digit entry remain open. The edit tab opens the record-100
   ChannelEditOptions pane (ADD_TO_HOME/MOVE/DELETE|REMOVE/EDIT_NAME/LOCK/
   FAVOURITE/TAG/TAG_ALL with the recovered conditions) behind
   `ui.channels_edit=1` (`common/channel_edit.c` + `check-channel-edit`, Dutch

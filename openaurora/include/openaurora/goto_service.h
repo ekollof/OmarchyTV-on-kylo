@@ -29,30 +29,40 @@ extern "C" {
  *   number up in the service list, ending the modal with the resulting item
  *   index; onDigitPress 0x00e7cb18 then calls setSelectedItem(result).
  *
- * This model implements the numeric entry, lookup and result semantics. The
- * serviceNumber authored x=-133 is not a settled runtime coordinate (the
- * text box is transformed by the dialog animation), so the screen paints the
- * digits centred in the authored box (centre 122,198) and documents that
- * placement as a project choice pending a capture. The entry ink and the
- * exact per-state art colors are likewise not pinned; the screen uses the
- * vendor dark ink #231F20 on the recovered white panel. The max digit count
- * is not reduced from the create arguments (12/13), so callers pass an
- * explicit bound (the screen uses ui.goto_max_digits, default 4).
+ * onDigitPress first calls totalNumberOfItems() @0x00e7cb40 and skips the
+ * modal when the list is empty (cbz @0x00e7cb44).
+ *
+ * This model implements the numeric entry, lookup and result semantics. A
+ * read-only on-TV fb1 sample (2026-11-19) pinned the live render: the dialog
+ * is static for ~1500 ms and paints only a flat #481730 167x167 entry box at
+ * (41,45)..(207,211) with white centred digit ink, over the still-visible
+ * channel screen — the named main_rectangle is layout metadata, not paint.
+ * The authored serviceNumber rect is pre-transform; the transform to the
+ * rendered box is still unrecovered. The max digit count is not reduced from
+ * the create arguments (12/13), so callers pass an explicit bound (the screen
+ * uses ui.goto_max_digits, default 4).
  */
 typedef struct {
     int x, y, x1, y1;
 } oa_goto_rect;
 
 typedef struct {
-    oa_goto_rect panel;       /* 0,0,540,239 */
-    oa_goto_rect number_box;  /* -133,98,377,298 authored */
+    oa_goto_rect panel;       /* 0,0,540,239 authored (layout, not paint) */
+    oa_goto_rect number_box;  /* -133,98,377,298 authored (pre-transform) */
     oa_goto_rect animation;   /* 0,308,100,408 */
+    /* Live stock render, read-only fb1 sampler 2026-11-19: the dialog paints
+     * a flat 167x167 #481730 entry box at 41,45..207,211 with the white digit
+     * ink centred at 125,127. The named main_rectangle/serviceNumber records
+     * are layout metadata, not opaque paint (as for DialogMainMenu). */
+    oa_goto_rect entry_box;   /* 41,45,207,211 rendered */
     int font_id;              /* 15 */
     int entry_mode;           /* 11 */
     int timeout_ms;           /* 1500 */
     int timeout_shortcut_ms;  /* 3000 */
     unsigned char panel_rgb[3];
     unsigned char number_rgb[3];
+    unsigned char entry_rgb[3];  /* 72,23,48 = #481730 */
+    unsigned char digit_rgb[3];  /* 255,255,255 */
 } oa_goto_layout;
 
 typedef struct {

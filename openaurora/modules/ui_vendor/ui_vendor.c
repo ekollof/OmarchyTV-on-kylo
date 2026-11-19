@@ -2481,9 +2481,12 @@ static void paint_channel_goto(struct ctx *c)
     if (oa_goto_layout_default(&l) != 0)
         return;
     const oa_ui_engine_iface *d = c->d;
-    d->fill(l.panel.x, l.panel.y, l.panel.x1 - l.panel.x,
-            l.panel.y1 - l.panel.y,
-            l.panel_rgb[0], l.panel_rgb[1], l.panel_rgb[2]);
+    /* The named main_rectangle is layout metadata, not an opaque paint; the
+     * live stock dialog leaves the channel screen visible and paints only the
+     * entry box (read-only sampler capture 2026-11-19). */
+    d->fill(l.entry_box.x, l.entry_box.y,
+            l.entry_box.x1 - l.entry_box.x, l.entry_box.y1 - l.entry_box.y,
+            l.entry_rgb[0], l.entry_rgb[1], l.entry_rgb[2]);
     if (c->chan_goto.len == 0)
         return;
     (void)goto_font_open(c);
@@ -2493,11 +2496,11 @@ static void paint_channel_goto(struct ctx *c)
     if (oa_font_text_measure(font, c->chan_goto.digits, 0, &advance) != 0 ||
         oa_bitmap_font_height(font, &font_height) != 0)
         return;
-    int cx = (l.number_box.x + l.number_box.x1) / 2;
-    int cy = (l.number_box.y + l.number_box.y1) / 2;
+    int cx = (l.entry_box.x + l.entry_box.x1) / 2;
+    int cy = (l.entry_box.y + l.entry_box.y1) / 2;
     channel_text_at(c, font, c->chan_goto.digits, cx - advance / 2,
                     cy - font_height / 2,
-                    l.number_rgb[0], l.number_rgb[1], l.number_rgb[2]);
+                    l.digit_rgb[0], l.digit_rgb[1], l.digit_rgb[2]);
 }
 
 /* Record-636 filter/sort popup (ChannelListFilterSortDialog). Drawn over the
@@ -4679,9 +4682,11 @@ static void move_key(struct ctx *c, uint8_t id)
                     matched = 0;
             }
         }
-        /* onDigitPress 0x00e7cb18 opens the GotoServiceDialog modal; the
-         * digit that opens it is processed by the dialog init. */
-        if (atoi(c->api->config_get(c->api->priv, "ui.channels_goto", "0"))
+        /* onDigitPress 0x00e7cb18 first calls totalNumberOfItems() and skips
+         * the modal entirely when the list is empty (e7cb40 cbz, verified in
+         * the shipped instructions and on TV). */
+        if (matched > 0 &&
+            atoi(c->api->config_get(c->api->priv, "ui.channels_goto", "0"))
                 == 1 &&
             is_goto_digit) {
             unsigned max_digits = (unsigned)atoi(

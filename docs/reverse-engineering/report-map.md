@@ -234,6 +234,7 @@ superseded claims and descriptions.
 - [STOCK-APPS-GRID-PARITY](../../artifacts/reports/STOCK-APPS-GRID-PARITY-2026-11-05.md)
 - [STOCK-PARITY](../../artifacts/reports/STOCK-PARITY-2026-11-04.md)
 - [STOCK-PARITY-2026-11-05](../../artifacts/reports/STOCK-PARITY-2026-11-05.md)
+- [STOCK-UI-LIVE-CAPTURES](../../artifacts/reports/STOCK-UI-LIVE-CAPTURES-2026-11-19.md)
 - [SVG-IMAGE](../../artifacts/reports/SVG-IMAGE-2026-11-03.md)
 - [SVG-IMAGE-CREATE](../../artifacts/reports/SVG-IMAGE-CREATE-2026-11-04.md)
 - [SVG-IMAGE-POINT-IDM](../../artifacts/reports/SVG-IMAGE-POINT-IDM-2026-11-04.md)

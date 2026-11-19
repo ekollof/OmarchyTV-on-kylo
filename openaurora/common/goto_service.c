@@ -12,16 +12,21 @@ int oa_goto_layout_default(oa_goto_layout *out)
     out->panel = (oa_goto_rect){ 0, 0, 540, 239 };
     out->number_box = (oa_goto_rect){ -133, 98, 377, 298 };
     out->animation = (oa_goto_rect){ 0, 308, 100, 408 };
+    out->entry_box = (oa_goto_rect){ 41, 45, 208, 212 };
     out->font_id = 15;
     out->entry_mode = 11;
     out->timeout_ms = 1500;
     out->timeout_shortcut_ms = 3000;
     const unsigned char panel[3] = { 255, 255, 255 };
-    /* Project ink on the recovered white panel; the entry-state art colors are
-     * not pinned (see the header). */
+    /* Authored ink (used by other dialogs) plus the measured live-render
+     * entry box: flat #481730 with white digit ink. See the header. */
     const unsigned char number[3] = { 35, 31, 32 };
+    const unsigned char entry[3] = { 72, 23, 48 };
+    const unsigned char digit[3] = { 255, 255, 255 };
     memcpy(out->panel_rgb, panel, sizeof panel);
     memcpy(out->number_rgb, number, sizeof number);
+    memcpy(out->entry_rgb, entry, sizeof entry);
+    memcpy(out->digit_rgb, digit, sizeof digit);
     return 0;
 }
 

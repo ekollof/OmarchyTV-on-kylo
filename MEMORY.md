@@ -1646,9 +1646,18 @@ states 395..398, 1500/3000 ms timeout, getNumericContents/service lookup,
 result -> setSelectedItem). `common/goto_service.c` + check-goto-service;
 `ui.channels_goto=1` opens on `ui.goto_digit_base` digits (0=off; Select id 53
 collides with ASCII '5'), Select resolves runtime RSN else lcn/channel_no and
-moves the focus, Exit cancels; digits are centred at 122,198 in #231F20
-because the authored x/ink are unpinned; timer/animation/position open.
-Candidate stock-goto.png. 2026-11-18 PVR-SCROLLBAR: tracks 692
+moves the focus, Exit cancels. 2026-11-19 live capture **corrects** the former
+placement: `onDigitPress` skips the modal on an empty list (cbz e7cb44); the
+live 1500 ms dialog is a flat 167x167 #481730 box at (41,45)..(207,211) with
+white digit ink centred at (125,127) over the unchanged channel screen, not a
+white panel at 122,198. `common/goto_service.c` carries the measured box/ink;
+ui_vendor paints only the box and guards on a non-empty list; authored-to-
+rendered transform open. Candidate stock-goto.png regenerated. The same
+read-only DIAL+fb1 pass captured the populated channel screen, EPG empty
+state, sources screen, edit pane and portal rails; one "Toevoegen aan Thuis"
+action wrote settingsDB (LauncherItem 53→54 rows, no visible rail change, both
+DB copies archived). TV restored to standby, staging removed, no helper.
+STOCK-UI-LIVE-CAPTURES-2026-11-19. 2026-11-18 PVR-SCROLLBAR: tracks 692
 1910,217,1920,974 and 693 1910,404,1920,984; shipped
 calculateBarSizeAndPosition + 20+16 caps (min 36), page 10/7; 2 jobs hide,
 12 jobs draw a 630 px bar (pvr-stock-scroll.png); exact skin art open.

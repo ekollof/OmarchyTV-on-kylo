@@ -433,7 +433,9 @@ int main(int argc, char **argv)
     oa_key_event digit9 = { .id = 109, .kind = OA_KEY_PRESS };
     host.api.emit(&host, OA_TOPIC_KEY, &digit9);
     oa_host_dispatch_posts(&host);
-    assert(find_fill(trace, 0, 0, 540, 239, 255, 255, 255));
+    /* Live stock render: a 167x167 #481730 entry box at 41,45 (no white
+     * panel; the channel list stays visible behind the dialog). */
+    assert(find_fill(trace, 41, 45, 167, 167, 72, 23, 48));
     const char *gcap = getenv("OA_CHANNELS_GOTO_CAPTURE");
     if (gcap && *gcap)
         assert(!trace->capture(gcap));

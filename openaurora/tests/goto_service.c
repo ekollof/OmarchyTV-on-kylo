@@ -16,9 +16,15 @@ int main(void)
            l.number_box.x1 == 377 && l.number_box.y1 == 298);
     assert(l.animation.x == 0 && l.animation.y == 308 &&
            l.animation.x1 == 100 && l.animation.y1 == 408);
+    assert(l.entry_box.x == 41 && l.entry_box.y == 45 &&
+           l.entry_box.x1 == 208 && l.entry_box.y1 == 212);
     assert(l.font_id == 15 && l.entry_mode == 11 && l.timeout_ms == 1500 &&
            l.timeout_shortcut_ms == 3000);
     assert(l.panel_rgb[0] == 255 && l.number_rgb[0] == 35);
+    assert(l.entry_rgb[0] == 72 && l.entry_rgb[1] == 23 &&
+           l.entry_rgb[2] == 48);
+    assert(l.digit_rgb[0] == 255 && l.digit_rgb[1] == 255 &&
+           l.digit_rgb[2] == 255);
     assert(oa_goto_layout_default(NULL) == -EINVAL);
 
     oa_goto_entry e;
