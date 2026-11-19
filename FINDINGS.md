@@ -19,6 +19,17 @@ filter-EPG state, the edit pane and portal/source screens. One stock
 "Toevoegen aan Thuis" action wrote the settingsDB (LauncherItem 53→54 rows);
 both DB copies are archived, the visible home rail is unchanged, and no DB
 write was attempted. Report: STOCK-UI-LIVE-CAPTURES-2026-11-19.
+CHANNEL-FILTER-LIVE-2026-11-19: the stock filter popup was captured read-only.
+Record 636's panel (60,117,666,467 #494949, #DCDCDC border, 70 px/5 rows) is
+authored layout metadata; the shared SettingItemsListBox paints (142,160)..
+(778,1079) in #3F0B13 with a 75 px step, a 614x65 #FE9419 focus bar at
+(152,228) and ten rows. The extra rows (UHD/HD/SD, Favorieten, Profielopties,
+Satellietlijst, Reset) and the ALL values are not in record 636; they are in
+the model as observed literals. `common/channel_filter.c` keeps the authored
+rects and adds the rendered layout; the candidate stock-filter.png matches.
+The `<`/`>` selectors and greyed ink remain unpainted. Record 151 (event
+options) was re-read from BinSVG and matches the model; a capture is blocked by
+the absent EIT/RF source. Report: STOCK-UI-LIVE-CAPTURES-2026-11-19.
 GOTO-ANIM-2026-11-19: SVGDialog::create 0x010c5728 probes standard-name ids
 0x39..0x40 (flip, slide_right, slide_left, slide_up, slide_down, fade, grow,
 bounce `_fade_in`); record 116 matches id 0x3d (slide down), so

@@ -373,12 +373,13 @@ int main(int argc, char **argv)
     oa_host_dispatch_posts(&host);
     host.api.emit(&host, OA_TOPIC_KEY, &sel);
     oa_host_dispatch_posts(&host);
-    assert(find_fill(trace, 60, 117, 606, 350, 73, 73, 73));
-    assert(find_fill(trace, 60, 117, 606, 1, 220, 220, 220));
-    assert(find_fill(trace, 61, 117, 604, 66, 254, 148, 25));
+    /* Live stock render (fb1 capture 2026-11-19): shared list-box panel
+     * 142,160 638x920 #3F0B13, 75 px step, 614x65 focus bar at 152,228. */
+    assert(find_fill(trace, 142, 160, 638, 920, 63, 11, 19));
+    assert(find_fill(trace, 152, 228, 614, 65, 254, 148, 25));
     host.api.emit(&host, OA_TOPIC_KEY, &down2);
     oa_host_dispatch_posts(&host);
-    assert(find_fill(trace, 61, 187, 604, 66, 254, 148, 25));
+    assert(find_fill(trace, 152, 303, 614, 65, 254, 148, 25));
     host.api.emit(&host, OA_TOPIC_KEY, &right);
     oa_host_dispatch_posts(&host);
     const char *fcap = getenv("OA_CHANNELS_FILTER_CAPTURE");

@@ -39,19 +39,32 @@ typedef struct {
 
 typedef struct {
     int selected;                    /* item index */
-    unsigned value[5];               /* value index per item */
+    unsigned value[10];              /* value index per item */
 } oa_channel_filter;
 
 typedef struct {
+    /* Authored BinSVG record 636 layout (not opaque paint): main_rectangle
+     * 60,117,666,467 and filterSortTypeList, fill #494949, border #DCDCDC. */
     oa_channel_filter_rect panel;
     int row_pitch;                   /* 70, captured settings-list step */
     int row_height;                  /* 66, SettingListBoxRowFA art */
     int visible_rows;                /* 5 */
     unsigned char panel_rgb[3], border_rgb[3];
     unsigned char focus_rgb[3], text_rgb[3], focus_text_rgb[3];
+    /* Live render, read-only on-TV fb1 capture 2026-11-19: the shared
+     * SettingItemsListBox paints a 638x920 #3F0B13 panel at 142,160..780,1080
+     * (the same panel as the edit pane), a 75 px row step and a 614x65 #FE9419
+     * focus bar starting at 152,228. Ten rows are visible, including the
+     * UHD/HD/SD, FAVOURITES, greyed PROFILE_OPTIONS/SATELLITE_LIST and RESET
+     * rows that record 636 does not name. */
+    oa_channel_filter_rect render_panel;
+    oa_channel_filter_rect render_focus;
+    int render_row_pitch;
+    int render_rows;
+    unsigned char render_panel_rgb[3];
 } oa_channel_filter_layout;
 
-#define OA_CHANNEL_FILTER_ITEMS 5
+#define OA_CHANNEL_FILTER_ITEMS 10
 
 /* Fill the recovered popup defaults. -EINVAL for NULL. */
 int oa_channel_filter_layout_default(oa_channel_filter_layout *out);
@@ -62,8 +75,8 @@ const oa_channel_filter_item *oa_channel_filter_catalogue(void);
 /* First value of every item and selected 0. -EINVAL for NULL. */
 int oa_channel_filter_default(oa_channel_filter *out);
 
-/* Move the selected item by delta, clamped to 0..4. Returns the new index or
- * -EINVAL for NULL. */
+/* Move the selected item by delta, clamped to 0..OA_CHANNEL_FILTER_ITEMS-1.
+ * Returns the new index or -EINVAL for NULL. */
 int oa_channel_filter_move(oa_channel_filter *f, int delta);
 
 /* Change the selected item's value by delta (wrapping within its values).

@@ -11,20 +11,36 @@ static const char *const TYPE_VALUES[] = {
 static const char *const TV_RADIO_VALUES[] = {
     "TV_ONLY", "RADIO_ONLY", "TEXT_ONLY"
 };
+/* ALL is the literal Dutch "Alles" fallback (no i18n key recovered) used by
+ * the free/pay, letter and quality rows in the live popup. */
 static const char *const FREE_PAY_VALUES[] = {
-    "FILTER_FREE", "FILTER_ENCRYPTED"
+    "Alles", "FILTER_FREE", "FILTER_ENCRYPTED"
 };
-static const char *const LETTER_VALUES[] = { "A-Z" };
+static const char *const LETTER_VALUES[] = { "Alles", "A-Z" };
 static const char *const SORT_VALUES[] = {
     "SORT_NUMERIC", "SORT_ALPHABETIC"
 };
+/* The extra five rows are visible on live firmware but not named in record
+ * 636; their labels are the observed Dutch strings and the quality values are
+ * the vendor literals already noted in the header. */
+static const char *const QUALITY_VALUES[] = {
+    "Alles", "UHD_HD_SD", "UHD_HD", "SD", "UHD"
+};
+static const char *const FAVOURITES_VALUES[] = { "Geen", "Alles" };
+static const char *const NONE_ALL_VALUES[] = { "Geen", "Alles" };
+static const char *const ALL_ONLY_VALUES[] = { "Alles" };
 
 static const oa_channel_filter_item CATALOGUE[OA_CHANNEL_FILTER_ITEMS] = {
     { "CHANNEL_TYPE", TYPE_VALUES, 6 },
     { "FILTER_TV_RADIO_LABEL", TV_RADIO_VALUES, 3 },
-    { "FREE_PAY_LABEL", FREE_PAY_VALUES, 2 },
-    { "FILTER_LETTER_LABEL", LETTER_VALUES, 1 },
-    { "SORT_LABEL", SORT_VALUES, 2 }
+    { "FREE_PAY_LABEL", FREE_PAY_VALUES, 3 },
+    { "FILTER_LETTER_LABEL", LETTER_VALUES, 2 },
+    { "SORT_LABEL", SORT_VALUES, 2 },
+    { "UHD/HD/SD", QUALITY_VALUES, 5 },
+    { "Favorieten", FAVOURITES_VALUES, 2 },
+    { "Profielopties", NONE_ALL_VALUES, 2 },
+    { "Satellietlijst", ALL_ONLY_VALUES, 1 },
+    { "Reset", NULL, 0 }             /* action row: no value */
 };
 
 int oa_channel_filter_layout_default(oa_channel_filter_layout *out)
@@ -41,11 +57,17 @@ int oa_channel_filter_layout_default(oa_channel_filter_layout *out)
     const unsigned char focus[3] = { 254, 148, 25 };     /* #FE9419 */
     const unsigned char text[3] = { 255, 255, 255 };
     const unsigned char focus_text[3] = { 126, 0, 10 };  /* #7E000A */
+    const unsigned char rendered[3] = { 63, 11, 19 };     /* #3F0B13 */
     memcpy(out->panel_rgb, panel, sizeof panel);
     memcpy(out->border_rgb, border, sizeof border);
     memcpy(out->focus_rgb, focus, sizeof focus);
     memcpy(out->text_rgb, text, sizeof text);
     memcpy(out->focus_text_rgb, focus_text, sizeof focus_text);
+    out->render_panel = (oa_channel_filter_rect){ 142, 160, 780, 1080 };
+    out->render_focus = (oa_channel_filter_rect){ 152, 228, 766, 293 };
+    out->render_row_pitch = 75;
+    out->render_rows = 10;
+    memcpy(out->render_panel_rgb, rendered, sizeof rendered);
     return 0;
 }
 

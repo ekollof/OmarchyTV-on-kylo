@@ -2586,17 +2586,13 @@ static void paint_channel_filter_popup(struct ctx *c)
     if (oa_channel_filter_layout_default(&l) != 0)
         return;
     const oa_ui_engine_iface *d = c->d;
-    int w = l.panel.x1 - l.panel.x, h = l.panel.y1 - l.panel.y;
-    d->fill(l.panel.x, l.panel.y, w, h, l.panel_rgb[0], l.panel_rgb[1],
-            l.panel_rgb[2]);
-    d->fill(l.panel.x, l.panel.y, w, 1, l.border_rgb[0], l.border_rgb[1],
-            l.border_rgb[2]);
-    d->fill(l.panel.x, l.panel.y1 - 1, w, 1, l.border_rgb[0],
-            l.border_rgb[1], l.border_rgb[2]);
-    d->fill(l.panel.x, l.panel.y, 1, h, l.border_rgb[0], l.border_rgb[1],
-            l.border_rgb[2]);
-    d->fill(l.panel.x1 - 1, l.panel.y, 1, h, l.border_rgb[0],
-            l.border_rgb[1], l.border_rgb[2]);
+    /* The authored record-636 rectangle is layout metadata: the live popup is
+     * painted by the shared list box at 142,160..780,1080 in #3F0B13. */
+    int w = l.render_panel.x1 - l.render_panel.x;
+    int h = l.render_panel.y1 - l.render_panel.y;
+    d->fill(l.render_panel.x, l.render_panel.y, w, h,
+            l.render_panel_rgb[0], l.render_panel_rgb[1],
+            l.render_panel_rgb[2]);
 
     const oa_channel_filter_item *items = oa_channel_filter_catalogue();
     const oa_i18n_iface *i18n = c->api->lookup(c->api->priv, OA_SVC_I18N, 1);
@@ -2605,40 +2601,44 @@ static void paint_channel_filter_popup(struct ctx *c)
                                                        : &c->font;
     int font_height = 0;
     (void)oa_bitmap_font_height(font, &font_height);
-    int first = c->chan_filter.selected >= l.visible_rows
-                    ? c->chan_filter.selected - l.visible_rows + 1 : 0;
-    for (int row = 0; row < l.visible_rows; row++) {
+    int first = c->chan_filter.selected >= l.render_rows
+                    ? c->chan_filter.selected - l.render_rows + 1 : 0;
+    for (int row = 0; row < l.render_rows; row++) {
         int index = first + row;
         if (index >= OA_CHANNEL_FILTER_ITEMS)
             break;
-        int y = l.panel.y + row * l.row_pitch;
+        int y = l.render_focus.y + row * l.render_row_pitch;
         int focused = index == c->chan_filter.selected;
         if (focused)
-            d->fill(l.panel.x + 1, y, w - 2, l.row_height, l.focus_rgb[0],
-                    l.focus_rgb[1], l.focus_rgb[2]);
-        int ty = y + (l.row_height - font_height) / 2;
-        if (ty < l.panel.y) ty = l.panel.y;
+            d->fill(l.render_focus.x, y,
+                    l.render_focus.x1 - l.render_focus.x,
+                    l.render_focus.y1 - l.render_focus.y,
+                    l.focus_rgb[0], l.focus_rgb[1], l.focus_rgb[2]);
+        int ty = y + (l.render_focus.y1 - l.render_focus.y - font_height) / 2;
+        if (ty < l.render_panel.y) ty = l.render_panel.y;
         const char *label = tab_label(i18n, items[index].key, items[index].key);
-        const char *value =
-            tab_label(i18n, items[index].values[c->chan_filter.value[index]],
-                      items[index].values[c->chan_filter.value[index]]);
+        const char *value = NULL;
+        if (items[index].value_count > 0)
+            value =
+                tab_label(i18n, items[index].values[c->chan_filter.value[index]],
+                          items[index].values[c->chan_filter.value[index]]);
         if (focused) {
-            channel_text_at(c, font, label, l.panel.x + 20, ty,
+            channel_text_at(c, font, label, l.render_panel.x + 38, ty,
                             l.focus_text_rgb[0], l.focus_text_rgb[1],
                             l.focus_text_rgb[2]);
             int advance = 0;
-            if (oa_font_text_measure(font, value, 0, &advance) == 0 &&
+            if (value && oa_font_text_measure(font, value, 0, &advance) == 0 &&
                 advance > 0 && advance < w - 40)
-                channel_text_at(c, font, value, l.panel.x1 - 20 - advance, ty,
+                channel_text_at(c, font, value, l.render_panel.x1 - 90 - advance, ty,
                                 l.focus_text_rgb[0], l.focus_text_rgb[1],
                                 l.focus_text_rgb[2]);
         } else {
-            channel_text_at(c, font, label, l.panel.x + 20, ty,
+            channel_text_at(c, font, label, l.render_panel.x + 38, ty,
                             l.text_rgb[0], l.text_rgb[1], l.text_rgb[2]);
             int advance = 0;
-            if (oa_font_text_measure(font, value, 0, &advance) == 0 &&
+            if (value && oa_font_text_measure(font, value, 0, &advance) == 0 &&
                 advance > 0 && advance < w - 40)
-                channel_text_at(c, font, value, l.panel.x1 - 20 - advance, ty,
+                channel_text_at(c, font, value, l.render_panel.x1 - 90 - advance, ty,
                                 l.text_rgb[0], l.text_rgb[1], l.text_rgb[2]);
         }
     }

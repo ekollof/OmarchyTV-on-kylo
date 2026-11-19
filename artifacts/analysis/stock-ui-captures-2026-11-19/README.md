@@ -9,6 +9,9 @@ change or `/conf` write. DIAL virtual RC keys were verified by capture diff
 `8e4278cc…`, staged under `/buffer/oa-stockcap-20261119`, hash-verified and
 removed afterwards).
 
+- `channel-filter-popup.png` — live filter popup from the populated channel
+  screen: panel #3F0B13 at (142,160)–(778,1079), 75 px row step, focused
+  "Zendertype" bar (152,228) 614x65, and all ten rows (see the report).
 - `goto-dialog-live.png` — pulse frame 20 (t≈658 ms): the real GotoService
   Dialog, a flat 167×167 `#481730` box at (41,45)..(207,211) with a centred
   white "1" over the populated channel screen.

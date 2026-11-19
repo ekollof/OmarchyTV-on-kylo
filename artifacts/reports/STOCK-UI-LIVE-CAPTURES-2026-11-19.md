@@ -89,6 +89,33 @@ context.
   channel list has rows. `check-goto-service` and `check-ui-channels-stock`
   pass; the `stock-goto.png` candidate was regenerated.
 
+## Channel filter popup — captured and reconciled (record 636)
+
+The popup was captured read-only from the populated channel screen (Bewerken →
+Filter → OK; Exit closes without applying). The live render differs from
+record 636's authored rects, the same layout-metadata-vs-paint pattern as the
+GotoServiceDialog:
+
+| element | record 636 (authored) | live fb1 capture |
+|---|---|---|
+| panel | 60,117,666,467 filled `#494949`, `#DCDCDC` border | (142,160)–(778,1079), filled **`#3F0B13`** (63,11,19), no light border |
+| row step | 70 px, 5 visible | **75 px, 10 rows** |
+| focus bar | 66 px tall at panel+1 | **614×65 at (152,228)**, `#FE9419` with `#7E000A` ink |
+
+Live rows: Zendertype=Alles (with `<`/`>` selectors), TV/Radio=Alleen TV,
+Gratis/Betalen=Alles, A-Z=Alles, Sorteren=Numeriek, UHD/HD/SD=Alles,
+Favorieten=Geen, Profielopties=Geen (greyed), Satellietlijst=Alles (greyed),
+Reset (no value). Record 636 names only the first five items; the extra five
+and the ALL values are now in the model as observed literals pending i18n keys.
+`common/channel_filter.c` keeps the authored rects and adds the rendered
+geometry/palette; `ui_vendor` paints the rendered popup and
+`check-channel-filter`/`check-ui-channels-stock` assert both. The candidate
+`stock-filter.png` matches the live rows. The `<`/`>` selectors and greyed-ink
+distinction remain unpainted. EPG/PVR option dialogs (record 151) could not be
+captured: GUIDE and the Timers card led to the empty-filter EPG state with no
+EIT/RF. Record 151 itself was re-read from BinSVG (`bgTextbox`
+610,806..1310,909; `itemPos` 610,844..1310,920; pitch 65) and matches the model.
+
 ## Show animation and multi-digit entry (firmware)
 
 - `SVGDialog::create` @0x010c5728 probes standard-name ids 0x39..0x40 in
