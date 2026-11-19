@@ -1,5 +1,11 @@
 # Current project state — last verified 2026-11-07
 
+Owner constraint, 2026-11-19: no RF/antenna source is available. Tuner
+RF/lock/scan acceptance and populated-EIT stock EPG/PVR captures are
+environment-blocked; do not plan them expecting an antenna or signal
+generator. Everything else (read-only captures, firmware recovery, offline
+and host work) remains available.
+
 Host-only cold-start correction, 2026-11-10: `mod_plat` now matches the vendor
 `PLAT_DRV_INI_Init` HAL order exactly — `Hal_Audio_Protect_Init(0)`, all three
 audio-prelude returns ignored/logged, `plat_common_init("DVIF")` idempotent with
