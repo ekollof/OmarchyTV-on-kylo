@@ -725,6 +725,13 @@ static void fire_due_timers(oa_host *h)
     }
 }
 
+void oa_host_pump_timers(oa_host *h)
+{
+    if (!h)
+        return;
+    fire_due_timers(h);
+}
+
 /* One wait. EINTR is not fatal: the caller loops. A real poll error is -1. */
 static int poll_once(oa_host *h)
 {

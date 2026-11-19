@@ -239,6 +239,7 @@ struct ctx {
     oa_channel_edit_inputs chan_edit_in;
     int chan_goto_open;              /* record-116 goto-service overlay is open */
     oa_goto_entry chan_goto;
+    uint64_t goto_tick;              /* 1500 ms auto-resolve timer */
     struct oa_bitmap_font goto_font; /* record-116 number font (15) */
     unsigned char *goto_font_data;
     int goto_font_on;
@@ -445,7 +446,7 @@ static const oa_ui_icon *find_icon(struct ctx *c, const char *name)
 enum { SCREEN_PORTAL = 0, SCREEN_OPEN = 1, SCREEN_SOURCES = 2, SCREEN_SETTINGS = 3,
        SCREEN_SETTINGS_LIST = 4, SCREEN_APPS = 5, SCREEN_CHANNELS = 6,
        SCREEN_SUBLAUNCHER = 7, SCREEN_PVR = 8, SCREEN_EPG = 9,
-       ANIM_DIALOG = 1 };
+       ANIM_DIALOG = 1, ANIM_GOTO = 2 };
 
 /* Picture-settings rows: 66 px FA bar content on the 70 px pitch, text
  * centered (row 4 centre 496). Row 6 ("Beeld zoomen") is disabled in the
@@ -2465,10 +2466,79 @@ static int channel_goto_resolve(struct ctx *c, uint32_t value)
     return oa_goto_find(numbers, (size_t)n, value);
 }
 
+/* GotoServiceDialog timer contract (onDigit 0x00d2262c): every digit kills
+ * and restarts one single-shot timer — 1500 ms, or 3000 ms while the
+ * keys-shortcut dialog is open. Select 0x20e or the timer runs
+ * findServiceAndEndDialog 0x00d223f8 (getNumericContents -> service lookup ->
+ * endDialog(result)); Exit codes 0x21f/0x28b dismiss without a lookup. */
+static int goto_timeout_ms(struct ctx *c)
+{
+    int ms = atoi(c->api->config_get(c->api->priv, "ui.goto_timeout_ms",
+                                     "1500"));
+    return ms > 0 ? ms : 0;
+}
+
+static void goto_disarm(struct ctx *c)
+{
+    if (c->goto_tick) {
+        c->api->timer_del(c->api->priv, c->goto_tick);
+        c->goto_tick = 0;
+    }
+}
+
+/* SVGDialog::create starts the record's animation_slide_down_fade_in
+ * (probe id 0x3d -> full-screen type 5) for 1000 ms. The vendor applies it in
+ * the graphics context above fb1; the scene warp is our equivalent. */
+static void goto_start_anim(struct ctx *c)
+{
+    oa_goto_layout l;
+    if (oa_goto_layout_default(&l) != 0)
+        return;
+    if (!c->anim || !c->anim->enabled())
+        return;
+    (void)c->anim->start(ANIM_GOTO, OA_ANIM_DIALOG, NULL, NULL,
+                         (uint32_t)l.anim.duration_ms, NULL);
+}
+
+static void goto_stop_anim(struct ctx *c)
+{
+    if (c->anim) (void)c->anim->cancel(ANIM_GOTO);
+    if (c->d) c->d->set_scene_transform(0, 0.0f);
+}
+
+static void goto_resolve_and_close(struct ctx *c)
+{
+    int index = channel_goto_resolve(c, oa_goto_value(&c->chan_goto));
+    if (index >= 0)
+        c->chan_sel = index;
+    c->chan_goto_open = 0;
+    goto_disarm(c);
+    goto_stop_anim(c);
+}
+
+static void goto_tick_cb(void *ud)
+{
+    struct ctx *c = ud;
+    c->goto_tick = 0;
+    if (!c->chan_goto_open)
+        return;
+    goto_resolve_and_close(c);
+    if (c->d) paint(c);
+}
+
+static void goto_arm(struct ctx *c)
+{
+    goto_disarm(c);
+    int ms = goto_timeout_ms(c);
+    if (ms <= 0)
+        return;
+    c->goto_tick = c->api->timer_add(c->api->priv, (uint32_t)ms, 0,
+                                     goto_tick_cb, c);
+}
+
 /* Record-116 GotoServiceDialog overlay, opened by a digit on the stock channel
- * screen when ui.channels_goto=1. The number is centred in the authored
- * serviceNumber box (122,198); the authored x and the entry-state art colors
- * are pre-transform/unpinned, so this is a documented project placement. */
+ * screen when ui.channels_goto=1. The live render is the firmware
+ * volume_bg.png box (see oa_goto_layout); the digits are centred in it. */
 static void paint_channel_goto(struct ctx *c)
 {
     if (!c || !c->d || !c->chan_goto_open)
@@ -4370,9 +4440,23 @@ static void rebind_tick_cb(void *ud)
 static void on_anim(int id, int kind, const oa_anim_rect *rect, float eased, int done, void *ud)
 {
     struct ctx *c = ud;
-    (void)id;
+    (void)kind;
     (void)rect;
     if (!c) return;
+    if (id == ANIM_GOTO) {
+        /* SVGDialog::create starts the record's show animation
+         * (animation_slide_down_fade_in -> full-screen type 5, 1000 ms). The
+         * vendor transform is applied by the graphics context above fb1, so
+         * the scene warp is the replacement equivalent; the channel screen
+         * stays the current screen and only the composite moves. */
+        if (c->d) {
+            c->d->set_scene_transform(done ? 0 : OA_GOTO_ANIM_SLIDE_DOWN,
+                                      done ? 0.0f : eased);
+            if (!c->suspended)
+                paint(c);
+        }
+        return;
+    }
     if (kind == OA_ANIM_DIALOG) {
         /* Vendor SVGDialog::onAnimationProgress pushes min(1,1+(p-1)^3) to the full-screen
          * transform; the callback already receives that eased value. The display v2 scene warp
@@ -4399,7 +4483,10 @@ static void on_anim(int id, int kind, const oa_anim_rect *rect, float eased, int
 
 static void cancel_dialog(struct ctx *c)
 {
-    if (c->anim) (void)c->anim->cancel(ANIM_DIALOG);
+    if (c->anim) {
+        (void)c->anim->cancel(ANIM_DIALOG);
+        (void)c->anim->cancel(ANIM_GOTO);
+    }
     if (c->d)
         c->d->set_scene_transform(0, 0.0f);
 }
@@ -4616,16 +4703,16 @@ static void move_key(struct ctx *c, uint8_t id)
         if (c->chan_goto_open) {
             if (is_goto_digit) {
                 (void)oa_goto_digit(&c->chan_goto, id - goto_base);
+                goto_arm(c);      /* every digit restarts the 1500 ms timer */
             } else if (id == 8 || id == 127) {
                 (void)oa_goto_backspace(&c->chan_goto);
+                goto_arm(c);
             } else if (id == 53 || id == 0x8a) {
-                int index = channel_goto_resolve(c,
-                                                 oa_goto_value(&c->chan_goto));
-                if (index >= 0)
-                    c->chan_sel = index;
-                c->chan_goto_open = 0;
+                goto_resolve_and_close(c);
             } else if (id == 10 || id == 48) {
                 c->chan_goto_open = 0;
+                goto_disarm(c);
+                goto_stop_anim(c);
             }
             if (c->d) paint(c);
             return;
@@ -4691,9 +4778,13 @@ static void move_key(struct ctx *c, uint8_t id)
             is_goto_digit) {
             unsigned max_digits = (unsigned)atoi(
                 c->api->config_get(c->api->priv, "ui.goto_max_digits", "4"));
+            if (max_digits == 0)
+                max_digits = OA_GOTO_DEFAULT_MAX_DIGITS;
             oa_goto_reset(&c->chan_goto, max_digits);
             (void)oa_goto_digit(&c->chan_goto, id - goto_base);
             c->chan_goto_open = 1;
+            goto_arm(c);
+            goto_start_anim(c);
             if (c->d) paint(c);
             return;
         }
@@ -5428,6 +5519,13 @@ static void ui_vendor_teardown(struct ctx *c)
         c->api->timer_del(c->api->priv, c->rail_hl_tick);
         c->rail_hl_tick = 0;
     }
+    if (c->goto_tick) {
+        c->api->timer_del(c->api->priv, c->goto_tick);
+        c->goto_tick = 0;
+    }
+    if (c->anim) (void)c->anim->cancel(ANIM_GOTO);
+    if (c->d) c->d->set_scene_transform(0, 0.0f);
+    c->chan_goto_open = 0;
     c->rail_hl_n = 0;
     c->rail_hl_frame = 0;
     c->rail_hl_play = 0;
@@ -5578,6 +5676,13 @@ static int m_suspend(void *v)
         c->api->timer_del(c->api->priv, c->rail_hl_tick);
         c->rail_hl_tick = 0;
     }
+    if (c->goto_tick) {
+        c->api->timer_del(c->api->priv, c->goto_tick);
+        c->goto_tick = 0;
+    }
+    if (c->anim) (void)c->anim->cancel(ANIM_GOTO);
+    if (c->d) c->d->set_scene_transform(0, 0.0f);
+    c->chan_goto_open = 0;
     /* the engine hold must be dropped here, or every suspend/resume cycle leaks one */
     if (c->d) {
         c->d->unregister_skin(&g_skin);

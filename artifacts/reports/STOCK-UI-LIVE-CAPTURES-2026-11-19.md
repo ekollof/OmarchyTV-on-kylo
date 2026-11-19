@@ -83,9 +83,42 @@ context.
   on screen at **(41,45)..(208,211) = 168×167** — the captured box, with no
   scale transform. The digit ink is white and centred in that box.
 - **Implementation correction:** `common/goto_service.c` now carries the
-  rendered entry box (exclusive corners 41,45,208,212), `#481730` fill and
-  white digit ink; `ui_vendor` paints only that box (no white panel) and, per
-  the firmware guard, opens the overlay only when the rendered channel list
-  has rows. `check-goto-service` and `check-ui-channels-stock` pass; the
-  `stock-goto.png` candidate was regenerated. Multi-digit entry, the entry
-  animation transform and the empty-state ink remain open.
+  rendered entry box (exclusive corners 41,45,209,212 = 168x167), `#481730`
+  fill and white digit ink; `ui_vendor` paints only that box (no white panel)
+  and, per the firmware guard, opens the overlay only when the rendered
+  channel list has rows. `check-goto-service` and `check-ui-channels-stock`
+  pass; the `stock-goto.png` candidate was regenerated.
+
+## Show animation and multi-digit entry (firmware)
+
+- `SVGDialog::create` @0x010c5728 probes standard-name ids 0x39..0x40 in
+  order — flip, slide_right, slide_left, slide_up, slide_down, fade, grow,
+  bounce `_fade_in`; the first rectangle present starts the show animation.
+  Record 116 has `animation_slide_down_fade_in`, i.e. id 0x3d → type 5.
+- `SVGDialog::startAnimation` @0x010c5008 maps id-0x39+1 to the framework's
+  full-screen animation type and calls `UIAnimationController::startAnimation`
+  with the DAT_010c5094 duration **1000.0 ms**; the controller ticks every
+  **150 ms**. The transform is applied by the graphics context above fb1
+  (`MaskPositioningTransform` / `hal::OpenGLGraphicsContext`), so an fb1 read
+  shows the finished dialog immediately — the live capture's single paint does
+  not mean "no animation".
+- Multi-digit entry (`onDigit` 0x00d2262c, `handleMessage` 0x00d226c8):
+  every digit is forwarded to the `SVGTextEntryBox` and kills/restarts one
+  single-shot timer — **1500 ms**, or **3000 ms** while the keys-shortcut
+  dialog is open. The ctor's last stack argument is **4** (`setMaxNoOfChars`),
+  so the number is at most 4 digits. Select (0x20e) or expiry calls
+  `findServiceAndEndDialog` @0x00d223f8 (`getNumericContents` → service-list
+  lookup → `endDialog(result)`); Exit codes 0x21f/0x28b dismiss without a
+  lookup. `ui_vendor` now arms a one-shot timer on open and on every digit,
+  resolves on Select or expiry, and disarms on Exit/stop. The live 1500 ms
+  default is kept; `ui.goto_timeout_ms` is a test/debug override.
+- `ui_vendor` binds the goto overlay to the already-recovered `ui.anim`
+  controller with a distinct animation id (type 5/1000 ms) and resets the
+  scene transform on every close path; the launcher dialog path is untouched.
+- Tests: `check-goto-service` asserts the animation descriptor (type 5,
+  1000 ms, 150 ms); `check-ui-channels-stock` loads `ui_clock`+`ui_anim` with a
+  raw clock provider, asserts the recorded type-5 scene transform and its
+  reset on close, drives the timer with a 90 ms override to assert
+  auto-resolve to row 2, and checks the per-digit re-arm (no close repaint
+  before the re-armed deadline). `oa_host_pump_timers` was added for tests
+  that drive the loop manually.

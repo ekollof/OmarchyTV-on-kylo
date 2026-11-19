@@ -6,6 +6,7 @@
 #include "openaurora/channel_layout.h"
 #include "openaurora/svg_scrollbar.h"
 #include "openaurora/events.h"
+#include "openaurora/goto_service.h"
 #include "openaurora/services.h"
 #include "openaurora/ui_engine.h"
 #include "ui_nav_trace.h"
@@ -25,6 +26,10 @@ static char g_font_index[512], g_font_pack[512], g_capture[512];
 static int g_portal;
 static int g_actions;
 static char g_action_name[64];
+/* ui.anim needs ui.clock, which needs a raw clock provider; the host loop has
+ * no ticker module in this fixture, so publish monotonic milliseconds here. */
+static uint64_t stock_raw_now(void) { return oa_now_ms(); }
+static const oa_clock_iface stock_raw = { stock_raw_now };
 
 static const char *config(void *p, const char *key, const char *def)
 {
@@ -41,6 +46,8 @@ static const char *config(void *p, const char *key, const char *def)
     if (!strcmp(key, "ui.channels_goto")) return "1";
     if (!strcmp(key, "ui.goto_max_digits")) return "4";
     if (!strcmp(key, "ui.goto_digit_base")) return "100";
+    if (!strcmp(key, "ui.goto_timeout_ms")) return "90";
+    if (!strcmp(key, "ui.anim_enable")) return "1";
     if (!strcmp(key, "i18n.profile")) return getenv("OA_CHANNELS_I18N_PROFILE");
     if (!strcmp(key, "i18n.language"))
         return getenv("OA_CHANNELS_I18N_LANG") ? getenv("OA_CHANNELS_I18N_LANG")
@@ -214,6 +221,21 @@ static int find_fill(const oa_nav_trace *trace, int x, int y, int w, int h,
     return 0;
 }
 
+static int count_fill(const oa_nav_trace *trace, int x, int y, int w, int h,
+    int r, int g, int b)
+{
+    int n = trace->fill_count(), hits = 0;
+    for (int i = 0; i < n; ++i) {
+        int fx, fy, fw, fh, fr, fg, fb;
+        if (trace->fill_at(i, &fx, &fy, &fw, &fh, &fr, &fg, &fb))
+            continue;
+        if (fx == x && fy == y && fw == w && fh == h &&
+            fr == r && fg == g && fb == b)
+            hits++;
+    }
+    return hits;
+}
+
 static int remove_entry(const char *path, const struct stat *st, int flag,
     struct FTW *ftw)
 {
@@ -258,6 +280,7 @@ int main(int argc, char **argv)
     assert(!oa_host_init(&host, g_modules, NULL));
     host.log_level = -1;
     host.api.config_get = config;
+    assert(!host.api.publish(&host, OA_SVC_CLOCK, 1, &stock_raw));
     char out[512];
     assert(!command(&host, "load nav_display", out, sizeof out));
     assert(!command(&host, "start nav_display", out, sizeof out));
@@ -269,6 +292,13 @@ int main(int argc, char **argv)
     }
     assert(!command(&host, "load ui_engine", out, sizeof out));
     assert(!command(&host, "start ui_engine", out, sizeof out));
+    assert(!command(&host, "load ui_clock", out, sizeof out));
+    assert(!command(&host, "start ui_clock", out, sizeof out));
+    assert(!command(&host, "load ui_anim", out, sizeof out));
+    assert(!command(&host, "start ui_anim", out, sizeof out));
+    const oa_ui_anim_iface *test_anim =
+        host.api.lookup(&host, OA_SVC_UI_ANIM, 2);
+    assert(test_anim);
     assert(!command(&host, "load ui_vendor", out, sizeof out));
     assert(!command(&host, "start ui_vendor", out, sizeof out));
 
@@ -450,6 +480,63 @@ int main(int argc, char **argv)
     host.api.emit(&host, OA_TOPIC_KEY, &runtime_select);
     oa_host_dispatch_posts(&host);
     assert(g_actions == 1 && !strcmp(g_action_name, "Runtime A"));
+
+    /* GotoServiceDialog timer (onDigit 0x00d2262c): each digit restarts one
+     * single-shot timer (1500 ms live; ui.goto_timeout_ms=90 here) and expiry
+     * resolves the number exactly like Select. */
+    oa_key_event digit5 = { .id = 105, .kind = OA_KEY_PRESS };
+    host.api.emit(&host, OA_TOPIC_KEY, &digit5);
+    oa_host_dispatch_posts(&host);
+    assert(count_fill(trace, 41, 45, 168, 167, 72, 23, 48) == 1);
+    /* The show animation is the full-screen type-5 slide/fade: SVGDialog
+     * probes record 116's animation_slide_down_fade_in id (0x3d) and starts
+     * a 1000 ms controller; the transform is applied above fb1. */
+    usleep(30 * 1000);
+    oa_host_pump_timers(&host);
+    oa_host_dispatch_posts(&host);
+    int a_type = -1, a_calls = 0;
+    float a_progress = -1.0f;
+    assert(!trace->transform(&a_type, &a_progress, &a_calls));
+    assert(a_type == OA_GOTO_ANIM_SLIDE_DOWN && a_calls > 0);
+    usleep(170 * 1000);
+    oa_host_pump_timers(&host);
+    oa_host_dispatch_posts(&host);
+    /* 5 resolved to Runtime C (RSN 5, index 2): the expiry paint shows the
+     * focus row 2 and no entry box (the trace is per painted scene). Closing
+     * cancels the show animation and resets the scene transform. */
+    assert(find_fill(trace, 19, 345, 748, 66, 254, 148, 25));
+    assert(count_fill(trace, 41, 45, 168, 167, 72, 23, 48) == 0);
+    assert(!trace->transform(&a_type, &a_progress, &a_calls));
+    assert(a_type == 0);
+
+    /* The re-interval check counts repaints, so stop the controller here: its
+     * own 10 ms ticks present the scene independently of the goto timer. */
+    assert(!test_anim->set_enabled(0));
+
+    /* A digit before the deadline re-arms it: at t=50 the second digit arms a
+     * new 90 ms timer, so a dispatch at t=110 must not close the dialog. */
+    int clears1 = 0, presents1 = 0;
+    oa_key_event digit1 = { .id = 101, .kind = OA_KEY_PRESS };
+    host.api.emit(&host, OA_TOPIC_KEY, &digit1);
+    oa_host_dispatch_posts(&host);
+    usleep(50 * 1000);
+    oa_key_event digit0 = { .id = 100, .kind = OA_KEY_PRESS };
+    host.api.emit(&host, OA_TOPIC_KEY, &digit0);
+    oa_host_dispatch_posts(&host);
+    assert(trace->counts(&clears1, &presents1, NULL, NULL) == 0);
+    usleep(60 * 1000);
+    oa_host_pump_timers(&host);
+    oa_host_dispatch_posts(&host);
+    int clears2 = 0, presents2 = 0;
+    assert(trace->counts(&clears2, &presents2, NULL, NULL) == 0);
+    assert(presents2 == presents1);   /* re-armed: no close repaint yet */
+    usleep(80 * 1000);                /* past the re-armed deadline */
+    oa_host_pump_timers(&host);
+    oa_host_dispatch_posts(&host);
+    int clears3 = 0, presents3 = 0;
+    assert(trace->counts(&clears3, &presents3, NULL, NULL) == 0);
+    assert(presents3 == presents2 + 1);  /* expiry painted the list once */
+
     host.api.emit(&host, OA_TOPIC_KEY, &exit);
     oa_host_dispatch_posts(&host);
     assert(portal->screen() == 0);

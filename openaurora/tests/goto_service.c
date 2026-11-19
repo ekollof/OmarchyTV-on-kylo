@@ -25,6 +25,11 @@ int main(void)
            l.entry_rgb[2] == 48);
     assert(l.digit_rgb[0] == 255 && l.digit_rgb[1] == 255 &&
            l.digit_rgb[2] == 255);
+    /* Show animation: record 116 has animation_slide_down_fade_in (probe id
+     * 0x3d -> type 5), 1000 ms, 150 ms controller tick. */
+    assert(l.anim.type == OA_GOTO_ANIM_SLIDE_DOWN);
+    assert(l.anim.duration_ms == 1000 && l.anim.tick_ms == 150);
+    assert(OA_GOTO_ANIM_FLIP == 1 && OA_GOTO_ANIM_BOUNCE == 8);
     assert(oa_goto_layout_default(NULL) == -EINVAL);
 
     oa_goto_entry e;

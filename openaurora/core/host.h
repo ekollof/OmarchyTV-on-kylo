@@ -177,6 +177,9 @@ void oa_host_cleanup_owned(oa_host *h, uint32_t module_id);
 int oa_host_enable_posts(oa_host *h, uint32_t module_id);
 void oa_host_disable_posts(oa_host *h, uint32_t module_id);
 void oa_host_dispatch_posts(oa_host *h);
+/* Fire every timer whose deadline has passed. oa_host_run does this each
+ * iteration; tests that drive the loop manually call it explicitly. */
+void oa_host_pump_timers(oa_host *h);
 /* One slice of each due task, at most eight tasks. Nested calls do nothing.
  * Standby (sleep_cycle) does not slice. */
 void oa_host_sched_pump(oa_host *h);

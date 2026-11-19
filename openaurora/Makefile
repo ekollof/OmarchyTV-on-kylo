@@ -1836,9 +1836,9 @@ check-apps-label: $(BUILD)/tests/apps_label
 check: check-apps-label
 
 ui-channels-modules = $(BUILD)/tests/ui-channels/modules
-$(ui-channels-modules): $(BUILD)/tests/ui_nav_display.so $(BUILD)/modules/mod_service_db.so $(BUILD)/modules/mod_ui_engine.so $(BUILD)/modules/mod_ui_vendor.so $(BUILD)/modules/mod_channels.so $(BUILD)/modules/mod_i18n.so
+$(ui-channels-modules): $(BUILD)/tests/ui_nav_display.so $(BUILD)/modules/mod_service_db.so $(BUILD)/modules/mod_ui_engine.so $(BUILD)/modules/mod_ui_vendor.so $(BUILD)/modules/mod_channels.so $(BUILD)/modules/mod_i18n.so $(BUILD)/modules/mod_ui_clock.so $(BUILD)/modules/mod_ui_anim.so
 	@mkdir -p $@
-	@for f in mod_service_db.so mod_ui_engine.so mod_ui_vendor.so mod_channels.so mod_i18n.so; do cp $(BUILD)/modules/$$f $@/$$f.tmp && mv $@/$$f.tmp $@/$$f; done
+	@for f in mod_service_db.so mod_ui_engine.so mod_ui_vendor.so mod_channels.so mod_i18n.so mod_ui_clock.so mod_ui_anim.so; do cp $(BUILD)/modules/$$f $@/$$f.tmp && mv $@/$$f.tmp $@/$$f; done
 	@cp $(BUILD)/tests/ui_nav_display.so $@/mod_nav_display.so.tmp && mv $@/mod_nav_display.so.tmp $@/mod_nav_display.so
 .PHONY: check-ui-channels
 check-ui-channels: $(BUILD)/tests/ui_channels $(ui-channels-modules)

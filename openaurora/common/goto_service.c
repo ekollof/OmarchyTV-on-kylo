@@ -27,6 +27,9 @@ int oa_goto_layout_default(oa_goto_layout *out)
     memcpy(out->number_rgb, number, sizeof number);
     memcpy(out->entry_rgb, entry, sizeof entry);
     memcpy(out->digit_rgb, digit, sizeof digit);
+    out->anim = (oa_goto_anim){ .type = OA_GOTO_ANIM_SLIDE_DOWN,
+                                .duration_ms = 1000,
+                                .tick_ms = 150 };
     return 0;
 }
 

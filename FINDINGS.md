@@ -19,6 +19,21 @@ filter-EPG state, the edit pane and portal/source screens. One stock
 "Toevoegen aan Thuis" action wrote the settingsDB (LauncherItem 53→54 rows);
 both DB copies are archived, the visible home rail is unchanged, and no DB
 write was attempted. Report: STOCK-UI-LIVE-CAPTURES-2026-11-19.
+GOTO-ANIM-2026-11-19: SVGDialog::create 0x010c5728 probes standard-name ids
+0x39..0x40 (flip, slide_right, slide_left, slide_up, slide_down, fade, grow,
+bounce `_fade_in`); record 116 matches id 0x3d (slide down), so
+startAnimation 0x010c5008 runs full-screen type 5 for the DAT_010c5094
+duration 1000 ms with a 150 ms controller tick. The transform is applied by
+the graphics context above fb1 (MaskPositioningTransform /
+hal::OpenGLGraphicsContext), so fb1 captures show the finished dialog; the
+capture does not disprove the animation. Multi-digit entry: each digit
+appends to the entry box (ctor max 4, setMaxNoOfChars) and restarts one
+single-shot timer (1500 ms, 3000 with the keys-shortcut dialog); Select or
+expiry runs findServiceAndEndDialog 0x00d223f8, Exit 0x21f/0x28b dismisses.
+ui_vendor arms/resolves/disarms it and binds the goto overlay to the existing
+ui.anim controller (type 5/1000 ms, distinct id, transform reset on close);
+check-ui-channels-stock asserts the recorded transform, timer auto-resolve and
+the per-digit re-arm.
 
 COLD-START-SEQUENCE-2026-11-10 corrects the HAL cold-start contract:
 `PLAT_DRV_INI_Init` passes an explicit 0 to `Hal_Audio_Protect_Init`, ignores

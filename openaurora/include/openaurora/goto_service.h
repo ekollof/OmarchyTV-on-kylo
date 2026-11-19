@@ -49,6 +49,33 @@ typedef struct {
     int x, y, x1, y1;
 } oa_goto_rect;
 
+/* Show animation, recovered from SVGDialog::create/startAnimation
+ * (0x010c5728/0x010c5008):
+ * - create probes standard-name ids 0x39..0x40 in order: flip, slide_right,
+ *   slide_left, slide_up, slide_down, fade, grow, bounce `*_fade_in`; the
+ *   first rectangle present starts the show animation for that id. Record 116
+ *   has `animation_slide_down_fade_in`, i.e. id 0x3d -> type 5.
+ * - startAnimation maps id-0x39+1 to the framework's full-screen animation
+ *   type and calls UIAnimationController with the DAT_010c5094 duration
+ *   (1000.0 ms); the controller ticks every 150 ms. The transform itself is
+ *   applied by the graphics context above fb1 (MaskPositioningTransform /
+ *   hal::OpenGLGraphicsContext), so a framebuffer read shows the painted
+ *   dialog immediately; do not infer "no animation" from an fb1 capture. */
+#define OA_GOTO_ANIM_FLIP 1
+#define OA_GOTO_ANIM_SLIDE_RIGHT 2
+#define OA_GOTO_ANIM_SLIDE_LEFT 3
+#define OA_GOTO_ANIM_SLIDE_UP 4
+#define OA_GOTO_ANIM_SLIDE_DOWN 5
+#define OA_GOTO_ANIM_FADE 6
+#define OA_GOTO_ANIM_GROW 7
+#define OA_GOTO_ANIM_BOUNCE 8
+
+typedef struct {
+    int type;        /* OA_GOTO_ANIM_* / 0 = none */
+    int duration_ms; /* 1000 from DAT_010c5094 */
+    int tick_ms;     /* 150 ms UIAnimationController timer */
+} oa_goto_anim;
+
 typedef struct {
     oa_goto_rect panel;       /* 0,0,540,239 authored (layout, not paint) */
     oa_goto_rect number_box;  /* -133,98,377,298 authored (pre-transform) */
@@ -65,6 +92,7 @@ typedef struct {
     unsigned char number_rgb[3];
     unsigned char entry_rgb[3];  /* 72,23,48 = #481730 */
     unsigned char digit_rgb[3];  /* 255,255,255 */
+    oa_goto_anim anim;           /* type 5, 1000 ms, 150 ms tick */
 } oa_goto_layout;
 
 typedef struct {
@@ -74,6 +102,7 @@ typedef struct {
 } oa_goto_entry;
 
 #define OA_GOTO_DEFAULT_MAX_DIGITS 4u
+
 
 /* Fill the record-116 defaults. -EINVAL for NULL. */
 int oa_goto_layout_default(oa_goto_layout *out);

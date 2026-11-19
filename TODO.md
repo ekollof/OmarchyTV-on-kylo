@@ -239,7 +239,11 @@ maps the cold-start stages and the current stock-UI coverage.
       the empty-list guard (`cbz` e7cb44) corrected in ui_vendor. The paint is
       firmware-exact: record 116 tag-2 = `../png/volume_bg.png` at
       matrix(1 0 0 1 15 23), opaque core at image 26,22..193,188 -> screen
-      41,45..208,211. One stock
+      41,45..208,211. Multi-digit entry (max 4, per-digit 1500/3000 ms timer,
+      Select/expiry lookup, Exit dismiss) and the show animation (probe ids
+      0x39..0x40, slide down = type 5, 1000 ms, 150 ms tick, applied above
+      fb1) are recovered and tested; the remaining gap is the renderer-level
+      transform itself. One stock
       "Toevoegen aan Thuis" action wrote settingsDB; both DB copies are
       archived, the visible home rail is unchanged, no DB write was attempted.
       Report: STOCK-UI-LIVE-CAPTURES-2026-11-19. Open: EPG/PVR populated stock

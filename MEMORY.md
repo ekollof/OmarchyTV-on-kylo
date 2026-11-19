@@ -1660,8 +1660,14 @@ white panel at 122,198. Transform is firmware-exact: record 116 tag-2 =
 `../png/volume_bg.png` at matrix(1 0 0 1 15 23); the asset (hash 0xb72d0a70,
 220x210) has an opaque #481730 core at image 26,22..193,188 -> screen
 41,45..208,211 (168x167). `common/goto_service.c` carries that box/ink;
-ui_vendor paints only the box and guards on a non-empty list. Candidate
-stock-goto.png regenerated. The same
+ui_vendor paints only the box and guards on a non-empty list. Multi-digit
+entry: digits append up to 4 (ctor arg), each restarts one single-shot timer
+(1500 ms; 3000 with the keys-shortcut dialog), Select or expiry runs
+findServiceAndEndDialog, Exit 0x21f/0x28b dismisses; ui_vendor arms/resolves
+and disarms it (`ui.goto_timeout_ms` is the test override). Show animation:
+SVGDialog probes standard-name ids 0x39..0x40; record 116 -> slide down
+(type 5), 1000 ms, 150 ms tick, applied by the graphics context above fb1.
+Candidate stock-goto.png regenerated. The same
 read-only DIAL+fb1 pass captured the populated channel screen, EPG empty
 state, sources screen, edit pane and portal rails; one "Toevoegen aan Thuis"
 action wrote settingsDB (LauncherItem 53→54 rows, no visible rail change, both
